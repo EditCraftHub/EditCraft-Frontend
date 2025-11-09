@@ -7,13 +7,15 @@ import { useEffect, useState, useRef } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { selectIsAuthenticated, selectAccessToken, logout } from "../../Store/Sclies/authSlice"
 import { FiUser, FiSettings, FiLogOut, FiChevronDown, FiBell, FiMessageSquare, FiPlus } from "react-icons/fi"
+import { apiSlice } from "@/app/Store/apiSclice/AuthApiSlice" // ✅ Changed from default import
 
 const Header = () => {
   const router = useRouter()
-  const pathname = usePathname() // ✅ Get current route
+  const pathname = usePathname()
   const dispatch = useDispatch()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [notifications, setNotifications] = useState(3)
+  const [isLoggingOut, setIsLoggingOut] = useState(false) // ✅ Added loading state
   const dropdownRef = useRef(null)
   
   const isAuthenticated = useSelector(selectIsAuthenticated)
@@ -57,19 +59,28 @@ const Header = () => {
     }
   }, [isAuthenticated, isLoading, router])
 
-  const handleLogout = async () => {
-    try {
-      await logoutMutation().unwrap()
-      dispatch(logout())
-      router.push('/Pages/Auth/login')
-    } catch (error) {
-      console.error('Logout failed:', error)
-      dispatch(logout())
-      router.push('/Pages/Auth/login')
-    }
+  // ✅ FIXED LOGOUT FUNCTION
+const handleLogout = async () => {
+  try {
+    // Close dropdown
+    setIsDropdownOpen(false);
+    
+    // Call logout API
+    await logoutMutation().unwrap();
+  } catch (error) {
+    console.error("Logout error:", error);
+  } finally {
+    // Clear everything
+    dispatch(logout());
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // ✅ Force full page reload to login page
+    window.location.href = '/Pages/Auth/login';
   }
+};
 
-  // ✅ Navigate to user's own profile
+  // Navigate to user's own profile
   const goToMyProfile = () => {
     if (profile?._id) {
       router.push(`/Pages/Main/profile/${profile._id}`)
@@ -77,7 +88,7 @@ const Header = () => {
     }
   }
 
-  // ✅ Check if on profile page
+  // Check if on profile page
   const isOnProfilePage = pathname.includes('/Pages/Main/profile/')
 
   if (!isAuthenticated) {
@@ -295,37 +306,28 @@ const Header = () => {
                         <p className='text-xs text-white/40'>View and edit profile</p>
                       </div>
                     </button>
-
-                    {/* ✅ Settings Hidden
-                    <button
-                      onClick={() => {
-                        router.push('/Pages/Main/settings')
-                        setIsDropdownOpen(false)
-                      }}
-                      className='w-full flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors text-left group'
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
-                        <FiSettings className='text-base text-purple-400' />
-                      </div>
-                      <div>
-                        <p className='text-sm text-white/90 font-medium'>Settings</p>
-                        <p className='text-xs text-white/40'>Preferences and privacy</p>
-                      </div>
-                    </button>
-                    */}
                   </div>
 
                   {/* Logout Section */}
                   <div className='border-t border-white/10 p-2'>
                     <button
                       onClick={handleLogout}
-                      className='w-full flex items-center gap-3 px-5 py-3 hover:bg-red-500/10 rounded-xl transition-all duration-200 text-left group'
+                      disabled={isLoggingOut}
+                      className={`w-full flex items-center gap-3 px-5 py-3 hover:bg-red-500/10 rounded-xl transition-all duration-200 text-left group
+                        ${isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''}
+                      `}
                     >
                       <div className="w-9 h-9 rounded-lg bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
-                        <FiLogOut className='text-base text-red-400' />
+                        {isLoggingOut ? (
+                          <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <FiLogOut className='text-base text-red-400' />
+                        )}
                       </div>
                       <div>
-                        <p className='text-sm text-red-400 group-hover:text-red-300 font-medium'>Logout</p>
+                        <p className='text-sm text-red-400 group-hover:text-red-300 font-medium'>
+                          {isLoggingOut ? 'Logging out...' : 'Logout'}
+                        </p>
                         <p className='text-xs text-red-400/50'>Sign out of your account</p>
                       </div>
                     </button>

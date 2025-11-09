@@ -33,7 +33,7 @@ const useSocket = () => {
     if (!socketInstance || socketInstance.disconnected) {
       console.log("🔌 Creating new socket connection...");
       
-      socketInstance = io("http://localhost:5000", {
+      socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
         auth: { accessToken: token },
         withCredentials: true,
         transports: ["websocket", "polling"],

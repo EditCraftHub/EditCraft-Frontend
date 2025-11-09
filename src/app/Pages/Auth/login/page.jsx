@@ -81,15 +81,16 @@ const Page = () => {
       localStorage.setItem("accessToken", res.accessToken);
 
       toast.success("Login successful! Redirecting...", { 
-        autoClose: 2000,
+        autoClose: 1500,
         position: "top-right"
       });
       
       setFormData({ email: "", password: "" });
       
+      // ✅ Force full page reload to home after 1.5 seconds
       setTimeout(() => {
-        router.push('/Pages/Main/home');
-      }, 2000);
+        window.location.href = '/Pages/Main/home';
+      }, 1500);
       
     } catch (err) {
       console.error("Login Error:", err);

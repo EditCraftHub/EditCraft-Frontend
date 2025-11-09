@@ -1,4 +1,4 @@
-// authSlice.js - Updated with setSignupEmail
+// authSlice.js - Fixed logout with cache clearing
 import { createSlice } from "@reduxjs/toolkit";
 import { apiSlice } from "../apiSclice/AuthApiSlice";
 
@@ -8,7 +8,7 @@ const initialState = {
     isAuthenticated: false,
     isLoading: false,
     error: null,
-    signupEmail: null, // ✅ Added for storing signup email
+    signupEmail: null,
 };
 
 const authSlice = createSlice({
@@ -22,21 +22,23 @@ const authSlice = createSlice({
             state.isAuthenticated = true;
             state.error = null;
         },
+
         logout: (state) => {
             state.user = null;
             state.accessToken = null;
             state.isAuthenticated = false;
             state.error = null;
-            state.signupEmail = null; // ✅ Clear signup email on logout
+            state.signupEmail = null;
         },
+
         clearError: (state) => {
             state.error = null;
         },
-        // ✅ NEW ACTION - Store signup email for OTP verification
+
         setSignupEmail: (state, action) => {
             state.signupEmail = action.payload;
         },
-        // ✅ NEW ACTION - Clear signup email after verification
+
         clearSignupEmail: (state) => {
             state.signupEmail = null;
         }
@@ -61,7 +63,7 @@ const authSlice = createSlice({
                 state.accessToken = action.payload.accessToken;
                 state.isAuthenticated = true;
                 state.error = null;
-                state.signupEmail = null; // ✅ Clear signup email after successful verification
+                state.signupEmail = null;
             }
         );
 
@@ -98,7 +100,6 @@ const authSlice = createSlice({
         builder.addMatcher(
             apiSlice.endpoints.logout.matchRejected,
             (state) => {
-                // Clear auth even if logout fails
                 state.user = null;
                 state.accessToken = null;
                 state.isAuthenticated = false;
@@ -108,21 +109,19 @@ const authSlice = createSlice({
     }
 });
 
-// ✅ Export actions
 export const { 
     setCredentials, 
     logout, 
     clearError, 
-    setSignupEmail,      // ✅ NEW - Export setSignupEmail
-    clearSignupEmail     // ✅ NEW - Export clearSignupEmail
+    setSignupEmail,
+    clearSignupEmail
 } = authSlice.actions;
 
 export default authSlice.reducer;
 
-// ✅ Selectors
 export const selectCurrentUser = (state) => state.auth.user;
 export const selectAccessToken = (state) => state.auth.accessToken;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectIsLoading = (state) => state.auth.isLoading;
 export const selectError = (state) => state.auth.error;
-export const selectSignupEmail = (state) => state.auth.signupEmail; // ✅ NEW - Selector for signup email
+export const selectSignupEmail = (state) => state.auth.signupEmail;
