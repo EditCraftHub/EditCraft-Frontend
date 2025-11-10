@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const notificationApiSlice = createApi({
     reducerPath: 'notificationApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `https://api.editcraft.co.in/v1/api/notifications`,
+        baseUrl: `https://api.editcraft.co.in/v1/api/notification`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth?.accessToken;
