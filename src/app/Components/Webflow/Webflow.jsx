@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { brain, content, thumbnail, video } from '@/app/Assets/images/Images';
@@ -5,9 +7,19 @@ import { FaRegArrowAltCircleRight } from "react-icons/fa";
 
 const Webflow = () => {
   const [visibleElements, setVisibleElements] = useState(new Set());
+  const [isMobile, setIsMobile] = useState(false);
   const observerRef = useRef(null);
 
   useEffect(() => {
+    // Detect mobile for performance optimizations
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    // Optimized IntersectionObserver
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -16,13 +28,17 @@ const Webflow = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { 
+        threshold: 0.1,
+        rootMargin: '50px' // Start loading earlier
+      }
     );
 
     const elements = document.querySelectorAll('[data-animate]');
     elements.forEach((el) => observerRef.current.observe(el));
 
     return () => {
+      window.removeEventListener('resize', checkMobile);
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
@@ -35,6 +51,7 @@ const Webflow = () => {
     <div id="service" className="overflow-x-hidden bg-gradient-to-br from-black via-gray-900 to-black rounded-[40px] min-h-screen flex items-center justify-center px-6 py-20 relative">
      
       <style jsx>{`
+        /* Use transform instead of position changes for better performance */
         @keyframes slideInLeft {
           from {
             opacity: 0;
@@ -98,26 +115,40 @@ const Webflow = () => {
 
         .animate-slide-left {
           animation: slideInLeft 1s ease-out forwards;
+          will-change: transform, opacity;
         }
 
         .animate-slide-right {
           animation: slideInRight 1s ease-out forwards;
+          will-change: transform, opacity;
         }
 
         .animate-scale-bounce {
           animation: scaleInBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+          will-change: transform, opacity;
+        }
+
+        /* Remove will-change after animation completes */
+        .animate-slide-left.animation-complete,
+        .animate-slide-right.animation-complete,
+        .animate-scale-bounce.animation-complete {
+          will-change: auto;
         }
 
         .animate-blob {
           animation: blob 7s infinite;
+          will-change: transform;
         }
 
         .service-card {
           position: relative;
           overflow: hidden;
-          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+                      border-color 0.4s ease,
+                      box-shadow 0.4s ease;
           background: rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           border: 2px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -132,6 +163,7 @@ const Webflow = () => {
           animation: shimmer 3s linear infinite;
           opacity: 0;
           transition: opacity 0.3s ease;
+          pointer-events: none;
         }
 
         .service-card:hover::before {
@@ -141,11 +173,16 @@ const Webflow = () => {
         .service-card:hover {
           transform: translateY(-10px) scale(1.02);
           border-color: rgba(206, 234, 69, 0.5);
-          animation: borderGlow 2s ease-in-out infinite;
+          will-change: transform;
+        }
+
+        .service-card:not(:hover) {
+          will-change: auto;
         }
 
         .service-card-1:hover {
           box-shadow: 0 25px 60px rgba(206, 234, 69, 0.3);
+          animation: borderGlow 2s ease-in-out infinite;
         }
 
         .service-card-2:hover {
@@ -165,8 +202,9 @@ const Webflow = () => {
           width: 20px;
           height: 20px;
           border: 2px solid currentColor;
-          transition: all 0.3s ease;
+          transition: width 0.3s ease, height 0.3s ease;
           z-index: 10;
+          pointer-events: none;
         }
 
         .corner-tl {
@@ -191,6 +229,7 @@ const Webflow = () => {
         .learn-more-btn {
           position: relative;
           overflow: hidden;
+          transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .learn-more-btn::before {
@@ -202,6 +241,7 @@ const Webflow = () => {
           height: 100%;
           background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
           transition: left 0.5s ease;
+          pointer-events: none;
         }
 
         .service-card:hover .learn-more-btn::before {
@@ -209,11 +249,17 @@ const Webflow = () => {
         }
 
         .image-container {
-          transition: all 0.4s ease;
+          transition: transform 0.4s ease, filter 0.4s ease;
+          will-change: auto;
         }
 
         .service-card:hover .image-container {
           transform: scale(1.1) rotate(5deg);
+          will-change: transform;
+        }
+
+        .service-card:not(:hover) .image-container {
+          will-change: auto;
         }
 
         .service-card-1:hover .image-container {
@@ -257,20 +303,48 @@ const Webflow = () => {
             linear-gradient(rgba(206, 234, 69, 0.03) 1px, transparent 1px),
             linear-gradient(90deg, rgba(206, 234, 69, 0.03) 1px, transparent 1px);
           background-size: 50px 50px;
+          pointer-events: none;
         }
 
         .pulse-dot {
           animation: pulse 2s ease-in-out infinite;
+          will-change: opacity;
         }
 
         .animation-delay-2s { animation-delay: 2s; }
         .animation-delay-4s { animation-delay: 4s; }
         .animation-delay-6s { animation-delay: 6s; }
         .animation-delay-8s { animation-delay: 8s; }
+
+        /* Mobile optimizations */
+        @media (max-width: 767px) {
+          .service-card::before {
+            animation: none;
+          }
+          
+          .animate-blob {
+            animation-duration: 10s; /* Slower on mobile */
+          }
+          
+          .service-card:hover {
+            transform: translateY(-5px) scale(1.01); /* Reduced movement */
+          }
+        }
+
+        /* Reduce motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+          *,
+          *::before,
+          *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
       `}</style>
 
       {/* Grid Pattern Background */}
-      <div className="absolute inset-0 grid-pattern pointer-events-none"></div>
+      <div className="absolute inset-0 grid-pattern"></div>
 
       {/* Animated Background Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -317,32 +391,34 @@ const Webflow = () => {
         </div>
 
         {/* ===== Box 1 - Video Editing ===== */}
-        <div 
-          data-animate="box1"
-          className={`service-card service-card-1 rounded-[40px] flex items-center justify-between px-6 py-6 h-[200px] cursor-pointer group ${
-            isVisible('box1') ? 'animate-scale-bounce' : 'opacity-0'
+             <div 
+          data-animate="box2"
+          className={`service-card service-card-2 rounded-[40px] flex items-center justify-between px-6 py-6 h-[200px] cursor-pointer group ${
+            isVisible('box2') ? 'animate-scale-bounce' : 'opacity-0'
           }`}
-          style={{ animationDelay: '0.1s' }}
+          style={{ animationDelay: '0.2s' }}
         >
-          <div className="corner-accent corner-tl text-[#ceea45]/50 group-hover:text-[#ceea45]"></div>
-          <div className="corner-accent corner-br text-[#ceea45]/50 group-hover:text-[#ceea45]"></div>
+          <div className="corner-accent corner-tl text-[#ceea45] group-hover:text-[#ceea45]"></div>
+          <div className="corner-accent corner-br text-[#ceea45] group-hover:text-[#ceea45]"></div>
           
           <div className="flex flex-col justify-between h-full relative z-10">
             <h2 className="font-bold text-xl text-white text-underline-effect">
-              Production grade <br/>Video Editing
+              Production grade<br/>Thumbnail Editing
             </h2>
-            <div className="learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[40px] w-[120px] rounded-full flex items-center justify-between px-3 group-hover:bg-[#ceea45] group-hover:border-[#ceea45] transition-all duration-300">
-              <FaRegArrowAltCircleRight className="text-white group-hover:text-black rotate-[-45deg] transition-all duration-300" size={18} />
-              <h3 className='text-xs text-white group-hover:text-black font-bold uppercase transition-all duration-300'>learn more</h3>
+            <div className="learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[40px] w-[120px] rounded-full flex items-center justify-between px-3 group-hover:bg-[#ceea45]  transition-all duration-300">
+              <FaRegArrowAltCircleRight className="text-white group-hover:text-white rotate-[-45deg] transition-all duration-300" size={18} />
+              <h3 className='text-xs text-white group-hover:text-white font-bold uppercase transition-all duration-300'>learn more</h3>
             </div>
           </div>
           <div className="image-container">
             <Image 
               src={video} 
-              alt="Video Editing" 
-              width={110} 
-              height={110} 
-              className="object-contain" 
+              alt="Thumbnail Editing" 
+              width={140} 
+              height={140} 
+              className="object-contain"
+              quality={90}
+              loading="lazy"
             />
           </div>
         </div>
@@ -373,7 +449,9 @@ const Webflow = () => {
               alt="Thumbnail Editing" 
               width={140} 
               height={140} 
-              className="object-contain" 
+              className="object-contain"
+              quality={90}
+              loading="lazy"
             />
           </div>
         </div>
@@ -404,7 +482,9 @@ const Webflow = () => {
               alt="Content Creation" 
               width={140} 
               height={140} 
-              className="object-contain" 
+              className="object-contain"
+              quality={90}
+              loading="lazy"
             />
           </div>
         </div>
@@ -435,7 +515,9 @@ const Webflow = () => {
               alt="Script Writing" 
               width={140} 
               height={140} 
-              className="object-contain" 
+              className="object-contain"
+              quality={90}
+              loading="lazy"
             />
           </div>
         </div>
