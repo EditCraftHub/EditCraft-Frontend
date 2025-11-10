@@ -11,7 +11,7 @@ console.log('================');
 export const apiSlice = createApi({
     reducerPath: "authApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v1/api/auth`,
+        baseUrl: `https://api.editcraft.co.in/v1/api/auth`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.accessToken;

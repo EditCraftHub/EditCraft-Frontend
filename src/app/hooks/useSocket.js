@@ -33,7 +33,7 @@ const useSocket = () => {
     if (!socketInstance || socketInstance.disconnected) {
       console.log("🔌 Creating new socket connection...");
       
-      socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
+      socketInstance = io('https://api.editcraft.co.in', {
         auth: { accessToken: token },
         withCredentials: true,
         transports: ["websocket", "polling"],
