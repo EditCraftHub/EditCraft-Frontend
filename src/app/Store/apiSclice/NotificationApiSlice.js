@@ -3,9 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const notificationApiSlice = createApi({
     reducerPath: 'notificationApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_URL
-            ? `${process.env.NEXT_PUBLIC_API_URL}/v1/api/notification`
-            : "http://localhost:5000/v1/api/notification",
+        baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v1/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth?.accessToken;

@@ -3,9 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const postApiSlice = createApi({
     reducerPath: 'postApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_URL
-            ? `${process.env.NEXT_PUBLIC_API_URL}/v1/api/post`
-            : "http://localhost:5000/v1/api/post",
+        baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v1/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             // ✅ FIXED: Added optional chaining

@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const apiSlice = createApi({
     reducerPath: "authApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "http://localhost:5000/v1/api/auth",
+        baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v1/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.accessToken;
