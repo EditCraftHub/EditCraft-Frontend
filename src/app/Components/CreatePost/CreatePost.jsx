@@ -249,7 +249,7 @@ const CreatePost = () => {
             </div>
             
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 sm:mb-3 animate-text-glow">
-              MISSION COMPLETE!
+             WORK COMPLETE!
             </h3>
             <p className="text-gray-300 mb-2 sm:mb-3 text-base sm:text-lg font-semibold">
               Post Created Successfully
@@ -322,7 +322,7 @@ const CreatePost = () => {
               <Briefcase className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-black animate-bounce-subtle" />
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-[#ceea45] via-white to-[#ceea45] bg-clip-text text-transparent mb-2 sm:mb-3 tracking-tight animate-text-glow">
-              CREATE MISSION
+              CREATE WORK
             </h2>
             <p className="text-gray-300 text-xs sm:text-sm uppercase tracking-wider font-semibold">Deploy Your Work Request</p>
             <div className="mt-2 sm:mt-3 flex items-center justify-center gap-1.5 sm:gap-2">
@@ -337,7 +337,7 @@ const CreatePost = () => {
             <div className="relative group">
               <label className="absolute -top-3 sm:-top-3 left-3 sm:left-4 bg-gradient-to-r from-gray-900 to-black px-1.5 sm:px-2 text-[10px] sm:text-xs text-[#ceea45] font-bold flex items-center gap-0.5 sm:gap-1 uppercase tracking-wider">
                 <FileText className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                Mission Title <span className="text-white">*</span>
+                Post Title <span className="text-white">*</span>
               </label>
               <input
                 type="text"
@@ -356,7 +356,7 @@ const CreatePost = () => {
             <div className="relative group">
               <label className="absolute -top-3 sm:-top-3 left-3 sm:left-4 bg-gradient-to-r from-gray-900 to-black px-1.5 sm:px-2 text-[10px] sm:text-xs text-[#ceea45] font-bold flex items-center gap-0.5 sm:gap-1 uppercase tracking-wider">
                 <FileText className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                Mission Brief <span className="text-white">*</span>
+                Post Description <span className="text-white">*</span>
               </label>
               <textarea
                 name="description"
@@ -395,7 +395,7 @@ const CreatePost = () => {
                 <div className="relative group">
                   <label className="absolute -top-3 sm:-top-3 left-3 sm:left-4 bg-gradient-to-r from-gray-900 to-black px-1.5 sm:px-2 text-[10px] sm:text-xs text-[#ceea45] font-bold flex items-center gap-0.5 sm:gap-1 uppercase tracking-wider">
                     <DollarSign className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                    Reward <span className="text-white">*</span>
+                    Budget <span className="text-white">*</span>
                   </label>
                   <input
                     type="number"
@@ -624,7 +624,7 @@ const CreatePost = () => {
                   ) : (
                     <>
                       <Zap className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
-                      <span className="text-sm sm:text-base md:text-lg">Deploy Mission</span>
+                      <span className="text-sm sm:text-base md:text-lg">Deploy Post</span>
                       <Zap className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
                     </>
                   )}
