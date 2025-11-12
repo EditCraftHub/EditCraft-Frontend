@@ -1,9 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const BASE_URL =   process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/v1/api/contact"
+    : "https://api.editcraft.co.in/v1/api/contact";
+
+
 const createContactApi = createApi({
     reducerPath: "contactApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://api.editcraft.co.in/v1/api/contact",
+        baseUrl: BASE_URL,
         credentials: "include"
     }),
     tagTypes: ["Contact"],

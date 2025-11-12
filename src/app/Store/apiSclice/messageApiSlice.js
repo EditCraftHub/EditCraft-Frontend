@@ -1,10 +1,14 @@
 // store/slices/messageApiSlice.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const BASE_URL =   process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/v1/api/messages"
+    : "https://api.editcraft.co.in/v1/api/messages";
+
 export const messageApiSlice = createApi({
     reducerPath: 'messageApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `https://api.editcraft.co.in/v1/api/messages`,
+        baseUrl: BASE_URL,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.accessToken;

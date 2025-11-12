@@ -2,16 +2,17 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // 🔍 DEBUG - Remove this after testing
-console.log('=== ENV DEBUG ===');
-console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
-console.log('Full Base URL:', `${process.env.NEXT_PUBLIC_API_URL}/v1/api/auth`);
-console.log('All NEXT_PUBLIC vars:', Object.keys(process.env).filter(k => k.startsWith('NEXT_PUBLIC_')));
-console.log('================');
+
+
+const BASE_URL =  process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/v1/api/auth"
+    : "https://api.editcraft.co.in/v1/api/auth";
+    
 
 export const apiSlice = createApi({
     reducerPath: "authApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: `https://api.editcraft.co.in/v1/api/auth`,
+        baseUrl: BASE_URL,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.accessToken;

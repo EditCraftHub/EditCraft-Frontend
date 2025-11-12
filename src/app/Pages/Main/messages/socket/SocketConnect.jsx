@@ -6,10 +6,11 @@ import { useGetUserChatsQuery, useGetMessagesQuery, useSendMessageMutation, useG
 import { useGetAllUsersQuery, useMyProfileQuery } from "@/app/Store/apiSclice/UserApiSlice";
 import useSocket from "@/app/hooks/useSocket";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ChatPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { socket, onlineUsers } = useSocket();
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -27,12 +28,20 @@ const ChatPage = () => {
   const { data: chatsData, refetch: refetchChats } = useGetUserChatsQuery();
   const { data: allUsersData } = useGetAllUsersQuery();
   const { data: messagesData, refetch: refetchMessages } = useGetMessagesQuery(
+
+    
+
+
     { chatId: selectedChat?._id },
     { skip: !selectedChat?._id }
   );
   
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
   const [getOrCreateChat] = useGetOrCreateChatMutation();
+
+
+
+
 
   const currentUser = myProfileData?.yourProfile;
   const conversations = chatsData?.chats || [];
@@ -109,6 +118,28 @@ const ChatPage = () => {
       return !messagesData.messages.some(apiMsg => apiMsg._id === liveMsg._id);
     }));
   }, [messagesData?.messages]);
+
+  useEffect(() => {
+  const chatIdFromUrl = searchParams.get('chatId');
+  
+  if (chatIdFromUrl && chatsData?.chats) {
+    console.log("🎯 Looking for chat:", chatIdFromUrl);
+    
+    // Find the chat in the list
+    const targetChat = chatsData.chats.find(
+      chat => chat._id === chatIdFromUrl || chat.chatId === chatIdFromUrl
+    );
+    
+    if (targetChat) {
+      console.log("✅ Auto-opening chat:", targetChat);
+      setSelectedChat(targetChat);
+      setLiveMessages([]);
+      setIsMobileView(true);
+    } else {
+      console.log("⚠️ Chat not found in list yet");
+    }
+  }
+}, [searchParams, chatsData?.chats]);
 
   useEffect(() => {
     if (!socket || !currentUser) return;

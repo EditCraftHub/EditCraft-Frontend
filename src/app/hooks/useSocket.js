@@ -18,6 +18,10 @@ const useSocket = () => {
   const onlineUsersTimeoutRef = useRef(null);
   const notificationsRef = useRef([]); // ✅ Cache notifications
 
+  const BASE_URL =   process.env.NODE_ENV === "development"
+    ? "http://localhost:5000"
+    : process.env.NEXT_PUBLIC_API_URL || "https://api.editcraft.co.in";
+
   useEffect(() => {
     isMountedRef.current = true;
     connectionCount++;
@@ -33,7 +37,7 @@ const useSocket = () => {
     if (!socketInstance || socketInstance.disconnected) {
       console.log("🔌 Creating new socket connection...");
       
-      socketInstance = io('https://api.editcraft.co.in', {
+      socketInstance = io(BASE_URL, {
         auth: { accessToken: token },
         withCredentials: true,
         transports: ["websocket", "polling"],

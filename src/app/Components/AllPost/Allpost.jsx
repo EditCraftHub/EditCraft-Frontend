@@ -2,6 +2,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
+import { useGetOrCreateChatMutation } from '@/app/Store/apiSclice/messageApiSlice'
+
 import { 
   useGetAllPostsQuery, 
   useToggleLikeMutation, 
@@ -164,6 +166,9 @@ const AllPost = () => {
   const [likeComment] = useLikeCommentMutation()
   const [addReply] = useAddReplyMutation()
 
+
+  const [getOrCreateChat, { isLoading: isCreatingChat }] = useGetOrCreateChatMutation()
+
   const allPosts = data?.posts
 
   useEffect(() => {
@@ -258,10 +263,29 @@ const AllPost = () => {
     }
   }
 
-  const handleConnect = (userId) => {
-    if (!userId) return
-    router.push(`/Pages/Main/messages?userId=${userId}`)
+const handleConnect = async (userId) => {
+  if (!userId) return
+  
+  try {
+    console.log("📤 Creating/getting chat with user:", userId)
+    
+    // Create/get chat first
+    const chatResult = await getOrCreateChat(userId).unwrap()
+    console.log("✅ Chat ready:", chatResult)
+    
+    // ✅ Navigate to messages page WITH the chatId in URL
+    router.push(`/Pages/Main/messages?chatId=${chatResult.chat._id}`)
+    
+  } catch (error) {
+    console.error("❌ Failed to open chat:", error)
+    setToast({ 
+      show: true, 
+      message: 'Failed to open chat. Please try again.', 
+      type: 'error' 
+    })
   }
+}
+
 
   const toggleComments = (postId) => {
     setShowComments(prev => ({
@@ -338,7 +362,7 @@ const gouserId = (profileId) => {
 
   return (
     <ProtectedRoute>
-      <div className='h-full w-full overflow-y-auto bg-gradient-to-br from-green-900 via-gray-950 to-black'>
+      <div className='h-full w-full overflow-y-auto bg-gradient-to-br from-[#ceea45] via-gray-950 to-black'>
         
         {/* Animated Background */}
         <div className="fixed inset-0 pointer-events-none">
@@ -346,7 +370,7 @@ const gouserId = (profileId) => {
           <div className="absolute bottom-20 right-10 w-72 h-72 bg-purple-500/5 rounded-full mix-blend-screen filter blur-3xl opacity-20" />
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 ">
           {/* Search Bar */}
           <div className="sticky top-0 backdrop-blur-xl bg-black/40 z-20 pb-4  px-1 md:px-4  lg:px-4">
             <div className="relative group">
@@ -402,7 +426,7 @@ const gouserId = (profileId) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl border border-[#ceea45]/20 hover:border-[#ceea45]/50 overflow-hidden hover:shadow-xl hover:shadow-[#ceea45]/10 transition-all duration-300"
+                    className="group bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl border border-[#ceea45] hover:border-[#ceea45] overflow-hidden hover:shadow-xl hover:shadow-[#ceea45]/10 transition-all duration-300"
                   >
                     {/* Post Header */}
                     <div className="p-4 md:p-5 flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-[#ceea45]/10">
@@ -432,14 +456,22 @@ const gouserId = (profileId) => {
 
                       {/* Action buttons */}
                       <div className="flex items-start gap-2 sm:items-center">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleConnect(post.userId?._id)}
-                          className="px-4 py-2 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black font-bold rounded-xl hover:shadow-lg hover:shadow-[#ceea45]/50 transition-all text-sm whitespace-nowrap"
-                        >
-                          Message
-                        </motion.button>
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  onClick={() => handleConnect(post.userId?._id)}
+  disabled={isCreatingChat}
+  className="px-4 py-2 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black font-bold rounded-xl hover:shadow-lg hover:shadow-[#ceea45]/50 transition-all text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {isCreatingChat ? (
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+      Opening...
+    </div>
+  ) : (
+    'Message'
+  )}
+</motion.button>
 
                         <div className="relative ml-10">
                           <motion.button 

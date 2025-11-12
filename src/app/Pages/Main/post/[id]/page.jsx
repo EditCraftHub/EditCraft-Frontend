@@ -859,10 +859,10 @@ const handleFollowToggle = async () => {
 
               {/* Stats */}
               <div className="flex items-center gap-6 text-gray-400 border-t border-white/10 pt-4">
-                <span className="flex items-center gap-2 hover:text-[#ceea45] transition-colors cursor-pointer">
+                {/* <span className="flex items-center gap-2 hover:text-[#ceea45] transition-colors cursor-pointer">
                   <Eye className="w-5 h-5 text-[#ceea45]" />
                   <span className="font-semibold">{post.views || 0}</span>
-                </span>
+                </span> */}
                 <span className="flex items-center gap-2 hover:text-rose-400 transition-colors cursor-pointer">
                   <Heart className="w-5 h-5 text-rose-400" />
                   <span className="font-semibold">{post.likes?.length || 0}</span>
@@ -910,248 +910,263 @@ const handleFollowToggle = async () => {
           </div>
 
           {/* Comments Section */}
-          <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 p-6"
-            style={{
-              boxShadow: '0 25px 80px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 80px rgba(206,234,69,0.05)'
-            }}
-          >
-            <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-2">
-              <MessageSquare className="w-6 h-6 text-[#ceea45]" />
-              Comments ({post.comments?.length || 0})
-            </h2>
+          {/* Comments Section */}
+<div 
+  className="bg-white/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 p-4 sm:p-5 md:p-6"
+  style={{
+    boxShadow: '0 25px 80px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 80px rgba(206,234,69,0.05)'
+  }}
+>
+  <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-4 sm:mb-5 md:mb-6 flex items-center gap-2">
+    <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-[#ceea45]" />
+    <span>Comments ({post.comments?.length || 0})</span>
+  </h2>
+  
+  {/* Your comments content here */}
+
 
             {/* Comment Form */}
-            <form onSubmit={handleAddComment} className="mb-6">
-              <div className="flex gap-3">
-                <img
-                  src={user?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullname || 'You')}&background=ceea45&color=000`}
-                  alt="You"
-                  className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
-                />
-                <div className="flex-1 flex gap-2">
-                  <input
-                    id="comment-input"
-                    type="text"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Write a comment..."
-                    className="flex-1 px-4 py-3 bg-white/5 border-2 border-white/20 rounded-xl focus:outline-none focus:border-[#ceea45] focus:bg-white/10 transition-all text-white placeholder:text-gray-500 backdrop-blur-sm"
-                  />
-                  <button
-                    type="submit"
-                    disabled={loadingStates.addComment || !commentText.trim()}
-                    className="px-6 py-3 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] hover:from-[#b8d93c] hover:to-[#ceea45] text-black rounded-xl font-bold transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-[#ceea45]/50 hover:scale-105"
-                  >
-                    {loadingStates.addComment ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Send className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </form>
+      <form onSubmit={handleAddComment} className="mb-4 sm:mb-6">
+  <div className="flex gap-2 sm:gap-3">
+    {/* Profile Picture - Smaller on mobile */}
+    <img
+      src={user?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullname || 'You')}&background=ceea45&color=000`}
+      alt="You"
+      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white/20 flex-shrink-0"
+    />
+    
+    {/* Input Container */}
+    <div className="flex-1 flex gap-1.5 sm:gap-2 min-w-0">
+      {/* Text Input */}
+      <input
+        id="comment-input"
+        type="text"
+        value={commentText}
+        onChange={(e) => setCommentText(e.target.value)}
+        placeholder="Add comment..."
+        className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-white/5 border border-white/20 sm:border-2 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#ceea45] focus:bg-white/10 transition-all text-white placeholder:text-gray-400 sm:placeholder:text-gray-500 backdrop-blur-sm text-sm sm:text-base min-w-0"
+      />
+      
+      {/* Submit Button - Icon only on mobile */}
+      <button
+        type="submit"
+        disabled={loadingStates.addComment || !commentText.trim()}
+        className="px-3 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] hover:from-[#b8d93c] hover:to-[#ceea45] active:scale-95 sm:hover:scale-105 text-black rounded-lg sm:rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-[#ceea45]/50 flex-shrink-0 min-w-[44px] sm:min-w-0"
+        aria-label="Post comment"
+      >
+        {loadingStates.addComment ? (
+          <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+        ) : (
+          <>
+            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Post</span>
+          </>
+        )}
+      </button>
+    </div>
+  </div>
+</form>
 
-            {/* Comments List */}
-            <div className="space-y-4">
-              {post.comments && post.comments.length > 0 ? (
-                post.comments.map((comment) => {
-                  const isCommentAuthor = comment.userId?._id === currentUserId;
+     {/* Comments List */}
+<div className="space-y-3 sm:space-y-4">
+  {post.comments && post.comments.length > 0 ? (
+    post.comments.map((comment) => {
+      const isCommentAuthor = comment.userId?._id === currentUserId;
 
-                  return (
-                    <div key={comment._id} className="group animate-fadeIn">
-                      <div className="flex gap-3">
-                        <img
-                          src={comment.userId?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.userId?.fullname || 'User')}&background=random`}
-                          alt={comment.userId?.fullname}
-                          className="w-10 h-10 rounded-full object-cover cursor-pointer hover:ring-4 hover:ring-[#ceea45]/50 transition-all border-2 border-white/20"
-                          onClick={() => navigateToProfile(comment.userId?._id)}
-                        />
-                        <div className="flex-1">
-                          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm">
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <h4 
-                                    className="font-bold text-white cursor-pointer hover:text-[#ceea45] transition-colors text-sm"
-                                    onClick={() => navigateToProfile(comment.userId?._id)}
-                                  >
-                                    {comment.userId?.fullname || 'User'}
-                                  </h4>
-                                  {comment.userId?.isVerified && (
-                                    <CheckCircle className="w-4 h-4 text-blue-400 fill-blue-400" />
-                                  )}
-                                </div>
-                                <p className="text-xs text-gray-500">{timeAgo(comment.createdAt)}</p>
-                              </div>
-                              {isCommentAuthor && (
-                                <button
-                                  onClick={() => setDeleteModal({ open: true, type: 'comment', id: comment._id, commentId: '' })}
-                                  disabled={loadingStates[`deleteComment-${comment._id}`]}
-                                  className="p-1.5 hover:bg-rose-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100 border border-transparent hover:border-rose-500/50"
-                                >
-                                  {loadingStates[`deleteComment-${comment._id}`] ? (
-                                    <Loader2 className="w-4 h-4 text-rose-400 animate-spin" />
-                                  ) : (
-                                    <Trash2 className="w-4 h-4 text-gray-400 hover:text-rose-400" />
-                                  )}
-                                </button>
-                              )}
-                            </div>
-                            <p className="text-gray-300 text-sm leading-relaxed break-words">{comment.text}</p>
-                          </div>
-
-                          {/* Comment Actions */}
-                          <div className="flex items-center gap-4 mt-2 ml-3 text-sm">
-                            <button
-                              onClick={() => handleLikeComment(comment._id)}
-                              disabled={loadingStates[`likeComment-${comment._id}`]}
-                              className={`flex items-center gap-1 font-medium transition-all disabled:opacity-50 hover:scale-110 ${
-                                isCommentLiked(comment)
-                                  ? 'text-rose-400'
-                                  : 'text-gray-400 hover:text-rose-400'
-                              }`}
-                            >
-                              {loadingStates[`likeComment-${comment._id}`] ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <Heart className={`w-4 h-4 ${isCommentLiked(comment) ? 'fill-current animate-pulse' : ''}`} />
-                              )}
-                              <span>{comment.likes?.length || 0}</span>
-                            </button>
-
-                            <button
-                              onClick={() => setShowReplies({ ...showReplies, [comment._id]: !showReplies[comment._id] })}
-                              className="flex items-center gap-1 text-gray-400 hover:text-[#ceea45] transition-colors font-medium hover:scale-110"
-                            >
-                              <Reply className="w-4 h-4" />
-                              <span>Reply ({comment.replies?.length || 0})</span>
-                            </button>
-                          </div>
-
-                          {/* Replies Section */}
-                          {showReplies[comment._id] && (
-                            <div className="mt-4 ml-3 pl-4 border-l-2 border-[#ceea45]/30 space-y-3 animate-fadeIn">
-                              {/* Add Reply Input */}
-                              <div className="flex gap-2">
-                                <img
-                                  src={user?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullname || 'You')}&background=ceea45&color=000`}
-                                  alt="You"
-                                  className="w-8 h-8 rounded-full object-cover border-2 border-white/20"
-                                />
-                                <div className="flex-1 flex gap-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Write a reply..."
-                                    value={replyText[comment._id] || ''}
-                                    onChange={(e) => setReplyText({ ...replyText, [comment._id]: e.target.value })}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleAddReply(comment._id)}
-                                    className="flex-1 px-3 py-2 text-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:border-[#ceea45] focus:bg-white/10 transition-all text-white placeholder:text-gray-500 backdrop-blur-sm"
-                                  />
-                                  <button
-                                    onClick={() => handleAddReply(comment._id)}
-                                    disabled={loadingStates[`addReply-${comment._id}`]}
-                                    className="px-4 py-2 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-sm disabled:opacity-50 hover:scale-105"
-                                  >
-                                    {loadingStates[`addReply-${comment._id}`] ? (
-                                      <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                      <Send className="w-4 h-4" />
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* Replies List */}
-                              {comment.replies && comment.replies.length > 0 ? (
-                                <div className="space-y-3">
-                                  {comment.replies.map((reply) => {
-                                    const isReplyAuthor = reply.userId?._id === currentUserId;
-
-                                    return (
-                                      <div key={reply._id} className="flex gap-2 group animate-fadeIn">
-                                        <img
-                                          src={reply.userId?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(reply.userId?.fullname || 'User')}&background=random`}
-                                          alt={reply.userId?.fullname}
-                                          className="w-7 h-7 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-[#ceea45]/50 transition-all border border-white/20"
-                                          onClick={() => navigateToProfile(reply.userId?._id)}
-                                        />
-                                        <div className="flex-1">
-                                          <div className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/10 transition-colors backdrop-blur-sm">
-                                            <div className="flex items-start justify-between mb-1">
-                                              <div className="flex items-center gap-2">
-                                                <span 
-                                                  className="font-semibold text-white text-sm cursor-pointer hover:text-[#ceea45] transition-colors"
-                                                  onClick={() => navigateToProfile(reply.userId?._id)}
-                                                >
-                                                  {reply.userId?.fullname || 'User'}
-                                                </span>
-                                                {reply.userId?.isVerified && (
-                                                  <CheckCircle className="w-3 h-3 text-blue-400 fill-blue-400" />
-                                                )}
-                                                <span className="text-xs text-gray-500">{timeAgo(reply.createdAt)}</span>
-                                              </div>
-                                              {isReplyAuthor && (
-                                                <button
-                                                  onClick={() => setDeleteModal({ open: true, type: 'reply', id: reply._id, commentId: comment._id })}
-                                                  disabled={loadingStates[`deleteReply-${reply._id}`]}
-                                                  className="p-1 hover:bg-rose-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100 border border-transparent hover:border-rose-500/50"
-                                                >
-                                                  {loadingStates[`deleteReply-${reply._id}`] ? (
-                                                    <Loader2 className="w-3 h-3 text-rose-400 animate-spin" />
-                                                  ) : (
-                                                    <Trash2 className="w-3 h-3 text-rose-400" />
-                                                  )}
-                                                </button>
-                                              )}
-                                            </div>
-                                            <p className="text-gray-300 text-sm leading-relaxed break-words">{reply.text}</p>
-                                          </div>
-
-                                          {/* Reply Like Button */}
-                                          <button
-                                            onClick={() => handleLikeReply(comment._id, reply._id)}
-                                            disabled={loadingStates[`likeReply-${reply._id}`]}
-                                            className={`mt-1.5 ml-2 text-xs font-medium transition-all flex items-center gap-1 disabled:opacity-50 hover:scale-110 ${
-                                              isReplyLiked(reply)
-                                                ? 'text-rose-400'
-                                                : 'text-gray-400 hover:text-rose-400'
-                                            }`}
-                                          >
-                                            {loadingStates[`likeReply-${reply._id}`] ? (
-                                              <Loader2 className="w-3 h-3 animate-spin" />
-                                            ) : (
-                                              <Heart className={`w-3 h-3 ${isReplyLiked(reply) ? 'fill-current animate-pulse' : ''}`} />
-                                            )}
-                                            <span>{reply.likes?.length || 0}</span>
-                                          </button>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              ) : (
-                                <div className="text-center py-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
-                                  <p className="text-xs text-gray-500 italic">No replies yet. Be the first! ✨</p>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+      return (
+        <div key={comment._id} className="group animate-fadeIn">
+          <div className="flex gap-2 sm:gap-3">
+            <img
+              src={comment.userId?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.userId?.fullname || 'User')}&background=random`}
+              alt={comment.userId?.fullname}
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover cursor-pointer hover:ring-2 sm:hover:ring-4 hover:ring-[#ceea45]/50 transition-all border-2 border-white/20 flex-shrink-0"
+              onClick={() => navigateToProfile(comment.userId?._id)}
+            />
+            <div className="flex-1 min-w-0">
+              <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm">
+                <div className="flex items-start justify-between mb-1.5 sm:mb-2 gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <h4 
+                        className="font-bold text-white cursor-pointer hover:text-[#ceea45] transition-colors text-xs sm:text-sm truncate"
+                        onClick={() => navigateToProfile(comment.userId?._id)}
+                      >
+                        {comment.userId?.fullname || 'User'}
+                      </h4>
+                      {comment.userId?.isVerified && (
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 fill-blue-400 flex-shrink-0" />
+                      )}
                     </div>
-                  );
-                })
-              ) : (
-                <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm">
-                  <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/20">
-                    <MessageSquare className="w-10 h-10 text-gray-500" />
+                    <p className="text-[10px] sm:text-xs text-gray-500">{timeAgo(comment.createdAt)}</p>
                   </div>
-                  <p className="text-white font-bold mb-1">No comments yet</p>
-                  <p className="text-sm text-gray-400">Be the first to comment! 💬</p>
+                  {isCommentAuthor && (
+                    <button
+                      onClick={() => setDeleteModal({ open: true, type: 'comment', id: comment._id, commentId: '' })}
+                      disabled={loadingStates[`deleteComment-${comment._id}`]}
+                      className="p-1 sm:p-1.5 hover:bg-rose-500/20 rounded-lg transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-transparent hover:border-rose-500/50 flex-shrink-0"
+                    >
+                      {loadingStates[`deleteComment-${comment._id}`] ? (
+                        <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-400 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 hover:text-rose-400" />
+                      )}
+                    </button>
+                  )}
+                </div>
+                <p className="text-gray-300 text-xs sm:text-sm leading-relaxed break-words">{comment.text}</p>
+              </div>
+
+              {/* Comment Actions */}
+              <div className="flex items-center gap-3 sm:gap-4 mt-1.5 sm:mt-2 ml-2 sm:ml-3 text-xs sm:text-sm">
+                <button
+                  onClick={() => handleLikeComment(comment._id)}
+                  disabled={loadingStates[`likeComment-${comment._id}`]}
+                  className={`flex items-center gap-1 font-medium transition-all disabled:opacity-50 active:scale-95 sm:hover:scale-110 ${
+                    isCommentLiked(comment)
+                      ? 'text-rose-400'
+                      : 'text-gray-400 hover:text-rose-400'
+                  }`}
+                >
+                  {loadingStates[`likeComment-${comment._id}`] ? (
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                  ) : (
+                    <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isCommentLiked(comment) ? 'fill-current animate-pulse' : ''}`} />
+                  )}
+                  <span>{comment.likes?.length || 0}</span>
+                </button>
+
+                <button
+                  onClick={() => setShowReplies({ ...showReplies, [comment._id]: !showReplies[comment._id] })}
+                  className="flex items-center gap-1 text-gray-400 hover:text-[#ceea45] transition-colors font-medium active:scale-95 sm:hover:scale-110"
+                >
+                  <Reply className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>Reply ({comment.replies?.length || 0})</span>
+                </button>
+              </div>
+
+              {/* Replies Section */}
+              {showReplies[comment._id] && (
+                <div className="mt-3 sm:mt-4 ml-2 sm:ml-3 pl-3 sm:pl-4 border-l-2 border-[#ceea45]/30 space-y-2 sm:space-y-3 animate-fadeIn">
+                  {/* Add Reply Input */}
+                  <div className="flex gap-1.5 sm:gap-2">
+                    <img
+                      src={user?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullname || 'You')}&background=ceea45&color=000`}
+                      alt="You"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border-2 border-white/20 flex-shrink-0"
+                    />
+                    <div className="flex-1 flex gap-1.5 sm:gap-2 min-w-0">
+                      <input
+                        type="text"
+                        placeholder="Write a reply..."
+                        value={replyText[comment._id] || ''}
+                        onChange={(e) => setReplyText({ ...replyText, [comment._id]: e.target.value })}
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddReply(comment._id)}
+                        className="flex-1 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-white/5 border border-white/20 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#ceea45] focus:bg-white/10 transition-all text-white placeholder:text-gray-500 backdrop-blur-sm min-w-0"
+                      />
+                      <button
+                        onClick={() => handleAddReply(comment._id)}
+                        disabled={loadingStates[`addReply-${comment._id}`]}
+                        className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-lg sm:rounded-xl hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-sm disabled:opacity-50 active:scale-95 sm:hover:scale-105 flex-shrink-0"
+                      >
+                        {loadingStates[`addReply-${comment._id}`] ? (
+                          <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                        ) : (
+                          <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Replies List */}
+                  {comment.replies && comment.replies.length > 0 ? (
+                    <div className="space-y-2 sm:space-y-3">
+                      {comment.replies.map((reply) => {
+                        const isReplyAuthor = reply.userId?._id === currentUserId;
+
+                        return (
+                          <div key={reply._id} className="flex gap-1.5 sm:gap-2 group animate-fadeIn">
+                            <img
+                              src={reply.userId?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(reply.userId?.fullname || 'User')}&background=random`}
+                              alt={reply.userId?.fullname}
+                              className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-[#ceea45]/50 transition-all border border-white/20 flex-shrink-0"
+                              onClick={() => navigateToProfile(reply.userId?._id)}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="bg-white/5 border border-white/10 rounded-lg sm:rounded-xl px-2.5 sm:px-3 py-1.5 sm:py-2 hover:bg-white/10 transition-colors backdrop-blur-sm">
+                                <div className="flex items-start justify-between mb-1 gap-1.5">
+                                  <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap min-w-0 flex-1">
+                                    <span 
+                                      className="font-semibold text-white text-xs sm:text-sm cursor-pointer hover:text-[#ceea45] transition-colors truncate"
+                                      onClick={() => navigateToProfile(reply.userId?._id)}
+                                    >
+                                      {reply.userId?.fullname || 'User'}
+                                    </span>
+                                    {reply.userId?.isVerified && (
+                                      <CheckCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-400 fill-blue-400 flex-shrink-0" />
+                                    )}
+                                    <span className="text-[10px] sm:text-xs text-gray-500">{timeAgo(reply.createdAt)}</span>
+                                  </div>
+                                  {isReplyAuthor && (
+                                    <button
+                                      onClick={() => setDeleteModal({ open: true, type: 'reply', id: reply._id, commentId: comment._id })}
+                                      disabled={loadingStates[`deleteReply-${reply._id}`]}
+                                      className="p-0.5 sm:p-1 hover:bg-rose-500/20 rounded-lg transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-transparent hover:border-rose-500/50 flex-shrink-0"
+                                    >
+                                      {loadingStates[`deleteReply-${reply._id}`] ? (
+                                        <Loader2 className="w-3 h-3 text-rose-400 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="w-3 h-3 text-rose-400" />
+                                      )}
+                                    </button>
+                                  )}
+                                </div>
+                                <p className="text-gray-300 text-xs sm:text-sm leading-relaxed break-words">{reply.text}</p>
+                              </div>
+
+                              {/* Reply Like Button */}
+                              <button
+                                onClick={() => handleLikeReply(comment._id, reply._id)}
+                                disabled={loadingStates[`likeReply-${reply._id}`]}
+                                className={`mt-1 sm:mt-1.5 ml-1.5 sm:ml-2 text-[10px] sm:text-xs font-medium transition-all flex items-center gap-1 disabled:opacity-50 active:scale-95 sm:hover:scale-110 ${
+                                  isReplyLiked(reply)
+                                    ? 'text-rose-400'
+                                    : 'text-gray-400 hover:text-rose-400'
+                                }`}
+                              >
+                                {loadingStates[`likeReply-${reply._id}`] ? (
+                                  <Loader2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-spin" />
+                                ) : (
+                                  <Heart className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${isReplyLiked(reply) ? 'fill-current animate-pulse' : ''}`} />
+                                )}
+                                <span>{reply.likes?.length || 0}</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 sm:py-6 bg-white/5 rounded-lg sm:rounded-xl border border-white/10 backdrop-blur-sm">
+                      <p className="text-[10px] sm:text-xs text-gray-500 italic">No replies yet. Be the first! ✨</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      );
+    })
+  ) : (
+    <div className="text-center py-12 sm:py-16 bg-white/5 rounded-xl sm:rounded-2xl border border-white/10 backdrop-blur-sm">
+      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 border-2 border-white/20">
+        <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-gray-500" />
+      </div>
+      <p className="text-white font-bold mb-1 text-sm sm:text-base">No comments yet</p>
+      <p className="text-xs sm:text-sm text-gray-400">Be the first to comment! 💬</p>
+    </div>
+  )}
+</div>
           </div>
         </div>
       </div>

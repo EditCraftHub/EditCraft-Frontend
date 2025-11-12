@@ -1,9 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+
+const BASE_URL =   process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/v1/api/user"
+    : "https://api.editcraft.co.in/v1/api/user";
+
 const userApiSlice = createApi({
     reducerPath: "userApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: `https://api.editcraft.co.in/v1/api/user`,
+        baseUrl: BASE_URL,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             // ✅ FIXED: Added optional chaining

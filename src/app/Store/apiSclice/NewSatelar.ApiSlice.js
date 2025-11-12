@@ -1,9 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const BASE_URL =   process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/v1/api/newsattaler"
+    : "https://api.editcraft.co.in/v1/api/newsattaler";
+
 const createNewSatelarApi = createApi({
     reducerPath: "newSatelarApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://api.editcraft.co.in/v1/api/newsattaler",
+        baseUrl: BASE_URL,
         credentials: "include"
     }),
     tagTypes: ["NewSatelar"],

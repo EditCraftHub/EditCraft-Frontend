@@ -78,6 +78,28 @@ html {
   scrollbar-color: #ceea45 rgba(0, 0, 0, 0.05);
 }
 
+/* Custom Scrollbar Styles */
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thumb-\[#ceea45\]\/20::-webkit-scrollbar-thumb {
+    background-color: rgba(206, 234, 69, 0.2);
+    border-radius: 3px;
+    transition: background-color 0.2s;
+  }
+  
+  .scrollbar-thumb-\[#ceea45\]\/20:hover::-webkit-scrollbar-thumb,
+  .hover\:scrollbar-thumb-\[#ceea45\]\/40:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(206, 234, 69, 0.4);
+  }
+  
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
 /* Dark mode scrollbar - Enhanced for EDITCRAFT */
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-track {

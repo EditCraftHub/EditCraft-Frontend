@@ -77,11 +77,26 @@ const Layout = ({ children }) => {
           )}
 
           {/* Scrollable Content Area - REMOVED sticky top-4 */}
-          <div className="flex-1 overflow-y-auto mx-4 lg:mx-6 mt-2 pb-4">
-            <div className={`${!shouldHideSidebar ? 'rounded-lg p-4' : ''}`}>
-              {children}
-            </div>
-          </div>
+   <div 
+  className="flex-1 overflow-y-auto overflow-x-hidden px-3 mx-0 sm:px-8 md:px-0 md:mx-4 lg:mx-6 pb-6 sm:pb-8 md:pb-4"
+  style={{
+    WebkitOverflowScrolling: 'touch',
+    overscrollBehavior: 'contain',
+  }}
+>
+  {/* Your content here */}
+
+  <div 
+    className={`
+      ${!shouldHideSidebar ? 'rounded-lg p-4 md:p-6' : ''}
+      h-full
+      transition-all 
+      duration-300
+    `}
+  >
+    {children}
+  </div>
+</div>
         </div>
       </div>
     </ProtectedRoute>

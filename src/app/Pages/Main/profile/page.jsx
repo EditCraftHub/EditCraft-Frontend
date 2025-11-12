@@ -2,6 +2,7 @@
 import { useGetMyPostsQuery } from '@/app/Store/apiSclice/PostApiSlice'
 import { useMyProfileQuery } from '@/app/Store/apiSclice/UserApiSlice'
 import { selectAccessToken, selectIsAuthenticated } from '@/app/Store/Sclies/authSlice'
+import { useGetOrCreateChatMutation } from '@/app/Store/apiSclice/messageApiSlice'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -23,6 +24,8 @@ const Page = () => {
     skip: !isAuthenticated
   });
 
+  const [getOrCreateChat, { isLoading: isCreatingChat }] = useGetOrCreateChatMutation();
+
   const profile = profileData?.yourProfile;
   const postsData = postsResponse?.posts || [];
 
@@ -34,6 +37,25 @@ const Page = () => {
         
         url: window.location.href,
       };
+
+      const handleMessageUser = async () => {
+  if (!profile?._id) return;
+  
+  try {
+    console.log("📤 Creating/getting chat with user:", profile._id);
+    
+    // Create/get chat
+    const chatResult = await getOrCreateChat(profile._id).unwrap();
+    console.log("✅ Chat ready:", chatResult);
+    
+    // Navigate to messages page WITH chatId
+    router.push(`/Pages/Main/messages?chatId=${chatResult.chat._id}`);
+    
+  } catch (error) {
+    console.error("❌ Failed to open chat:", error);
+    alert("Failed to open chat. Please try again.");
+  }
+};
   
       if (navigator.share) {
         try {
@@ -193,13 +215,34 @@ const Page = () => {
                           )}
                         </div>
                       </div>
+<div className="flex gap-3">
+  {/* Message Button */}
+  <button
+    onClick={handleMessageUser}
+    disabled={isCreatingChat}
+    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-purple-500/50 hover:scale-105"
+  >
+    {isCreatingChat ? (
+      <>
+        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        Opening...
+      </>
+    ) : (
+      <>
+        <MessageCircle size={18} />
+        Message
+      </>
+    )}
+  </button>
 
-                      <Link href="/Pages/Main/edit-profile">
-                        <button className="px-6 py-3 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all flex items-center gap-2 shadow-lg hover:shadow-[#ceea45]/50 hover:scale-105">
-                          <Settings size={18} />
-                          Edit Profile
-                        </button>
-                      </Link>
+  {/* Edit Profile Button */}
+  <Link href="/Pages/Main/edit-profile">
+    <button className="px-6 py-3 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all flex items-center gap-2 shadow-lg hover:shadow-[#ceea45]/50 hover:scale-105">
+      <Settings size={18} />
+      Edit Profile
+    </button>
+  </Link>
+</div>
                     </div>
 
                     {profile?.bio && (
@@ -242,9 +285,12 @@ const Page = () => {
                       </div>
                       <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border-2 border-white/10 hover:border-pink-500/50 transition-all cursor-pointer group hover:scale-105">
                         <div className="text-3xl font-black text-pink-400 mb-1 group-hover:scale-110 transition-transform">{profile?.following?.length || 0}</div>
-                        <div className="text-gray-400 text-sm font-bold uppercase tracking-wide">Following</div>
+                        <div className="text-gray-400 text-sm font-bold uppercase tracking-wide ">Following</div>
                       </div>
                     </div>
+
+
+                    
                   </div>
                 </div>
               </div>

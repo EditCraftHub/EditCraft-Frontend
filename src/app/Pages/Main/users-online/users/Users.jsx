@@ -86,56 +86,60 @@ const Users = () => {
   };
 
   // 🔥 Send message and navigate to chat
-  const handleSendMessage = async () => {
-    if (!message.trim() || !dmModal.user) return;
+// 🔥 Send message and navigate to chat
+const handleSendMessage = async () => {
+  if (!message.trim() || !dmModal.user) return;
 
-    try {
-      console.log("📤 Creating/getting chat with user:", dmModal.user._id);
-      
-      // Step 1: Get or create chat
-      const chatResult = await getOrCreateChat(dmModal.user._id).unwrap();
-      console.log("✅ Chat created/retrieved:", chatResult);
+  try {
+    console.log("📤 Creating/getting chat with user:", dmModal.user._id);
+    
+    // Step 1: Get or create chat
+    const chatResult = await getOrCreateChat(dmModal.user._id).unwrap();
+    console.log("✅ Chat created/retrieved:", chatResult);
 
-      // Step 2: Send the message
-      const messageResult = await sendMessage({
-        recipientId: dmModal.user._id,
-        chatId: chatResult.chat._id,
-        message: message.trim()
-      }).unwrap();
-      
-      console.log("✅ Message sent:", messageResult);
+    // Step 2: Send the message
+    const messageResult = await sendMessage({
+      recipientId: dmModal.user._id,
+      chatId: chatResult.chat._id,
+      message: message.trim()
+    }).unwrap();
+    
+    console.log("✅ Message sent:", messageResult);
 
-      // Step 3: Close modal
-      closeDmModal();
+    // Step 3: Close modal
+    closeDmModal();
 
-      // Step 4: Navigate to messages page
-      router.push('/Pages/Main/messages');
-      
-    } catch (error) {
-      console.error("❌ Failed to send message:", error);
-      alert("Failed to send message. Please try again.");
-    }
-  };
+    // Step 4: Navigate to messages page WITH chatId ✅
+    router.push(`/Pages/Main/messages?chatId=${chatResult.chat._id}`);
+    
+  } catch (error) {
+    console.error("❌ Failed to send message:", error);
+    alert("Failed to send message. Please try again.");
+  }
+};
+
+
+
 
   // 🔥 Quick message - sends instantly and navigates to chat
-  const handleQuickMessage = async (user, e) => {
-    e.stopPropagation();
+const handleQuickMessage = async (user, e) => {
+  e.stopPropagation();
+  
+  try {
+    console.log("📤 Quick messaging user:", user._id);
     
-    try {
-      console.log("📤 Quick messaging user:", user._id);
-      
-      // Create/get chat and navigate to messages
-      const chatResult = await getOrCreateChat(user._id).unwrap();
-      console.log("✅ Chat ready:", chatResult);
-      
-      // Navigate to messages page (chat will be selected)
-      router.push('/Pages/Main/messages');
-      
-    } catch (error) {
-      console.error("❌ Failed to open chat:", error);
-      alert("Failed to open chat. Please try again.");
-    }
-  };
+    // Create/get chat
+    const chatResult = await getOrCreateChat(user._id).unwrap();
+    console.log("✅ Chat ready:", chatResult);
+    
+    // Navigate to messages page WITH chatId ✅
+    router.push(`/Pages/Main/messages?chatId=${chatResult.chat._id}`);
+    
+  } catch (error) {
+    console.error("❌ Failed to open chat:", error);
+    alert("Failed to open chat. Please try again.");
+  }
+};
 
   const getRoleColor = (role) => {
     const colors = {
