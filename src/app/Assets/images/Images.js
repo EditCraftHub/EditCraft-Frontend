@@ -6,8 +6,8 @@ import video from '../images/video.png'
 import thumbnail from '../images/thumbnail.png'
 import content from '../images/content.png'
 import brain from '../images/brain.png'
-import team1 from '../images/team.jpeg'
-import team2 from '../images/team2.jpeg'
+import team1 from '../images/download.jpg'
+import team2 from '../images/banner.png'
 
 import boy1 from '../images/boy1.png'
 

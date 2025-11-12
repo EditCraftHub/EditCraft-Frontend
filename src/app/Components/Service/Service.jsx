@@ -627,7 +627,7 @@ const Service = () => {
                   disablePictureInPicture
                   controlsList="nodownload nofullscreen noremoteplayback"
                 >
-                  <source src="/video1.mp4" type="video/mp4" />
+                  <source src="/video2.mp4" type="video/mp4" />
                 </video>
               </div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400">
@@ -655,7 +655,8 @@ const Service = () => {
                 disablePictureInPicture
                 controlsList="nodownload"
               >
-                <source src="/video1.mp4" type="video/mp4" />
+                
+                <source src="/video3.mp4" type="video/mp4" />
               </video>
             </div>
             
