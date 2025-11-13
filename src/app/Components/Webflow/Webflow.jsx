@@ -403,7 +403,7 @@ const Webflow = () => {
           
           <div className="flex flex-col justify-between h-full relative z-10">
             <h2 className="font-bold text-xl text-white text-underline-effect">
-              Production grade<br/>Thumbnail Editing
+              Production grade<br/>Video Editing
             </h2>
             <div className="learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[40px] w-[120px] rounded-full flex items-center justify-between px-3 group-hover:bg-[#ceea45]  transition-all duration-300">
               <FaRegArrowAltCircleRight className="text-white group-hover:text-white rotate-[-45deg] transition-all duration-300" size={18} />
