@@ -19,7 +19,7 @@ const Page = () => {
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
   
   const hombtn = () => {
-    router.push('/');
+    router.push('/Pages/Main/home');
   }
   
   const [formData, setFormData] = useState({
@@ -97,7 +97,7 @@ const Page = () => {
       });
 
       setTimeout(() => {
-        router.push("/Pages/login");
+        router.push("/Pages/Auth/login");
       }, 2000);
 
     } catch (error) {
