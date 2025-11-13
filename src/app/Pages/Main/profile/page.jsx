@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { toast } from 'react-toastify';
 import { User, Mail, Calendar, MapPin, Edit, Grid, List, Heart, MessageCircle, Eye, CheckCircle, Crown, Users, Settings, Share2, MoreVertical, Briefcase, Clock, DollarSign, Tag, Sparkles, ArrowLeft } from 'lucide-react'
 
 const Page = () => {
@@ -29,16 +30,35 @@ const Page = () => {
   const profile = profileData?.yourProfile;
   const postsData = postsResponse?.posts || [];
 
-  const goback = () => {
-    router.back('/Pages/Main/home');
-  }
-    const handleShare = async () => {
-      const shareData = {
-        
-        url: window.location.href,
-      };
+const goback = () => {
+  router.back('/Pages/Main/home');
+}
 
-      const handleMessageUser = async () => {
+const handleShare = async () => {
+  const shareData = {
+    url: window.location.href,
+  };
+  
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      toast.success('📤 Shared successfully!');
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Share error:', err);
+      }
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      toast.success('🔗 Link copied to clipboard!');
+    } catch (err) {
+      toast.error('Failed to copy link');
+    }
+  }
+};
+
+const handleMessageUser = async () => {
   if (!profile?._id) return;
   
   try {
@@ -56,27 +76,7 @@ const Page = () => {
     alert("Failed to open chat. Please try again.");
   }
 };
-  
-      if (navigator.share) {
-        try {
-          await navigator.share(shareData);
-          toast.success('📤 Shared successfully!');
-        } catch (err) {
-          if (err.name !== 'AbortError') {
-            console.error('Share error:', err);
-          }
-        }
-      } else {
-        try {
-          await navigator.clipboard.writeText(shareData.url);
-          toast.success('🔗 Link copied to clipboard!');
-        } catch (err) {
-          toast.error('Failed to copy link');
-        }
-      }
-    };
-
-    
+    // Different view modes
 
   useEffect(() => {
     setIsVisible(true);
@@ -131,9 +131,9 @@ const Page = () => {
 
           <div className="absolute top-6 left-6 flex justify-between items-center gap-3">
              <div onClick={()=> goback()}  className=' bsolute top-6 left-6 text-white text-2xl bg-black rounded-full p-4 cursor-pointer hover:bg-[#ceea45]/10 hover:text-[#ceea45] transition-all hover:scale-110'><ArrowLeft /></div>
-            {/* <button onClick={handleShare} className="p-3 bg-white/10 backdrop-blur-xl hover:bg-[#ceea45]/20 rounded-xl border border-white/20 hover:border-[#ceea45]/50 transition-all group">
+            <button onClick={handleShare} className="p-3 bg-white/10 backdrop-blur-xl hover:bg-[#ceea45]/20 rounded-xl border border-white/20 hover:border-[#ceea45]/50 transition-all group">
               <Share2 size={20} className="text-gray-300 group-hover:text-[#ceea45] transition-colors" />
-            </button> */}
+            </button>
             {/* <button className="p-3 bg-white/10 backdrop-blur-xl hover:bg-[#ceea45]/20 rounded-xl border border-white/20 hover:border-[#ceea45]/50 transition-all group">
               <MoreVertical size={20} className="text-gray-300 group-hover:text-[#ceea45] transition-colors" />
             </button> */}
