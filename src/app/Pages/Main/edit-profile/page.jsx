@@ -117,7 +117,7 @@ const EditProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-y-auto overflow-x-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-y-auto overflow-x-hidden relative pb-24">
       {/* Animated background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-64 h-64 md:w-96 md:h-96 bg-[#ceea45]/10 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob"></div>
@@ -146,27 +146,27 @@ const EditProfilePage = () => {
 
       <div className={`relative z-10 transition-all duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         {/* Header */}
-        <div className="sticky top-0 z-40 bg-black/50 backdrop-blur-xl border-b border-white/10">
+        <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-xl border-b border-white/10">
           <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 md:gap-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                 <Link href="/Pages/Main/profile">
-                  <button className="w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-all border border-white/20 hover:border-[#ceea45]/50">
+                  <button className="w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-all border border-white/20 hover:border-[#ceea45]/50 flex-shrink-0">
                     <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
                 </Link>
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-[#ceea45] via-white to-[#ceea45] bg-clip-text text-transparent flex items-center gap-2">
-                    <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-[#ceea45]" />
-                    Edit Profile
+                <div className="min-w-0">
+                  <h1 className="text-xl md:text-3xl font-black bg-gradient-to-r from-[#ceea45] via-white to-[#ceea45] bg-clip-text text-transparent flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 md:w-8 md:h-8 text-[#ceea45] flex-shrink-0" />
+                    <span className="truncate">Edit Profile</span>
                   </h1>
-                  <p className="text-xs md:text-sm text-gray-400 mt-1">Update your personal information</p>
+                  <p className="text-xs md:text-sm text-gray-400 mt-1 truncate">Update your personal information</p>
                 </div>
               </div>
               <button
                 onClick={handleSubmit}
                 disabled={isUpdating}
-                className="hidden md:flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-lg hover:shadow-[#ceea45]/50 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hidden md:flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-lg hover:shadow-[#ceea45]/50 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
               >
                 {isUpdating ? (
                   <>
@@ -317,7 +317,7 @@ const EditProfilePage = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2 flex items-center gap-2">
+                  <label className="block text-sm font-bold text-gray-300 mb-2 items-center gap-2">
                     <Mail size={16} className="text-[#ceea45]" />
                     Email
                   </label>
@@ -346,27 +346,30 @@ const EditProfilePage = () => {
                 </div>
               </div>
             </div>
-
-            {/* Mobile Save Button */}
-            <button
-              type="submit"
-              disabled={isUpdating}
-              className="md:hidden w-full py-4 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isUpdating ? (
-                <>
-                  <Loader className="w-5 h-5 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save size={20} />
-                  Save Changes
-                </>
-              )}
-            </button>
           </form>
         </div>
+      </div>
+
+      {/* Fixed Mobile Save Button */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black via-black to-transparent">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isUpdating}
+          className="w-full py-4 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {isUpdating ? (
+            <>
+              <Loader className="w-5 h-5 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save size={20} />
+              Save Changes
+            </>
+          )}
+        </button>
       </div>
 
       <style jsx>{`

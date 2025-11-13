@@ -31,7 +31,7 @@ const Page = () => {
   const postsData = postsResponse?.posts || [];
 
 const goback = () => {
-  router.back('/Pages/Main/home');
+  router.push('/Pages/Main/home');
 }
 
 const handleShare = async () => {
@@ -131,9 +131,9 @@ const handleMessageUser = async () => {
 
           <div className="absolute top-6 left-6 flex justify-between items-center gap-3">
              <div onClick={()=> goback()}  className=' bsolute top-6 left-6 text-white text-2xl bg-black rounded-full p-4 cursor-pointer hover:bg-[#ceea45]/10 hover:text-[#ceea45] transition-all hover:scale-110'><ArrowLeft /></div>
-            <button onClick={handleShare} className="p-3 bg-white/10 backdrop-blur-xl hover:bg-[#ceea45]/20 rounded-xl border border-white/20 hover:border-[#ceea45]/50 transition-all group">
+            {/* <button onClick={handleShare} className="p-3 bg-white/10 backdrop-blur-xl hover:bg-[#ceea45]/20 rounded-xl border border-white/20 hover:border-[#ceea45]/50 transition-all group">
               <Share2 size={20} className="text-gray-300 group-hover:text-[#ceea45] transition-colors" />
-            </button>
+            </button> */}
             {/* <button className="p-3 bg-white/10 backdrop-blur-xl hover:bg-[#ceea45]/20 rounded-xl border border-white/20 hover:border-[#ceea45]/50 transition-all group">
               <MoreVertical size={20} className="text-gray-300 group-hover:text-[#ceea45] transition-colors" />
             </button> */}
@@ -217,7 +217,7 @@ const handleMessageUser = async () => {
                       </div>
 <div className="flex gap-3">
   {/* Message Button */}
-  <button
+  {/* <button
     onClick={handleMessageUser}
     disabled={isCreatingChat}
     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-purple-500/50 hover:scale-105"
@@ -233,7 +233,7 @@ const handleMessageUser = async () => {
         Message
       </>
     )}
-  </button>
+  </button> */}
 
   {/* Edit Profile Button */}
   <Link href="/Pages/Main/edit-profile">
@@ -274,20 +274,20 @@ const handleMessageUser = async () => {
                     </div>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border-2 border-white/10 hover:border-[#ceea45]/50 transition-all cursor-pointer group hover:scale-105">
-                        <div className="text-3xl font-black text-[#ceea45] mb-1 group-hover:scale-110 transition-transform">{postsData?.length || 0}</div>
-                        <div className="text-gray-400 text-sm font-bold uppercase tracking-wide">Posts</div>
-                      </div>
-                      <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border-2 border-white/10 hover:border-purple-500/50 transition-all cursor-pointer group hover:scale-105">
-                        <div className="text-3xl font-black text-purple-400 mb-1 group-hover:scale-110 transition-transform">{profile?.followers?.length || 0}</div>
-                        <div className="text-gray-400 text-sm font-bold uppercase tracking-wide">Followers</div>
-                      </div>
-                      <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border-2 border-white/10 hover:border-pink-500/50 transition-all cursor-pointer group hover:scale-105">
-                        <div className="text-3xl font-black text-pink-400 mb-1 group-hover:scale-110 transition-transform">{profile?.following?.length || 0}</div>
-                        <div className="text-gray-400 text-sm font-bold uppercase tracking-wide ">Following</div>
-                      </div>
-                    </div>
+<div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+  <div className="bg-white/5 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 md:p-4 border border-white/10 sm:border-2 hover:border-[#ceea45]/50 transition-all cursor-pointer group hover:scale-105 active:scale-95 flex flex-col items-center justify-center text-center">
+    <div className="text-xl sm:text-2xl md:text-3xl font-black text-[#ceea45] mb-0.5 sm:mb-1 group-hover:scale-110 transition-transform">{postsData?.length || 0}</div>
+    <div className="text-gray-400 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wide">Posts</div>
+  </div>
+  <div className="bg-white/5 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 md:p-4 border border-white/10 sm:border-2 hover:border-purple-500/50 transition-all cursor-pointer group hover:scale-105 active:scale-95 flex flex-col items-center justify-center text-center">
+    <div className="text-xl sm:text-2xl md:text-3xl font-black text-purple-400 mb-0.5 sm:mb-1 group-hover:scale-110 transition-transform">{profile?.followers?.length || 0}</div>
+    <div className="text-gray-400 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wide">Followers</div>
+  </div>
+  <div className="bg-white/5 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 md:p-4 border border-white/10 sm:border-2 hover:border-pink-500/50 transition-all cursor-pointer group hover:scale-105 active:scale-95 flex flex-col items-center justify-center text-center">
+    <div className="text-xl sm:text-2xl md:text-3xl font-black text-pink-400 mb-0.5 sm:mb-1 group-hover:scale-110 transition-transform">{profile?.following?.length || 0}</div>
+    <div className="text-gray-400 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wide">Following</div>
+  </div>
+</div>
 
 
                     
