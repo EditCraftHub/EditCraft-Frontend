@@ -164,7 +164,7 @@ export default function NotFoundPage() {
                 { icon: Home, label: 'Home', path: '/' },
                 { icon: Search, label: 'Search', path: '/' },
                 { icon: Compass, label: 'Explore', path: '/' },
-                { icon: MapPin, label: 'Find Us', path: '#contact' }
+                { icon: MapPin, label: 'Find Us', path: '/' }
               ].map((link, index) => (
                 <a
                   key={index}
