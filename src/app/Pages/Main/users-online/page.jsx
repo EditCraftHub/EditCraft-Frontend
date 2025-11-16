@@ -376,15 +376,15 @@ const Page = () => {
             <Users />
 
             <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-lg hover:shadow-[#ceea45]/50 hover:scale-105">
+              {/* <button className="px-8 py-4 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black rounded-xl font-bold hover:from-[#b8d93c] hover:to-[#ceea45] transition-all shadow-lg hover:shadow-[#ceea45]/50 hover:scale-105">
                 Load More Users
-              </button>
-              <button 
+              </button> */}
+              {/* <button 
                 onClick={clearFilters}
                 className="px-8 py-4 bg-white/5 border-2 border-white/20 text-white rounded-xl font-bold hover:bg-white/10 hover:border-white/30 transition-all hover:scale-105"
               >
                 Reset Filters
-              </button>
+              </button> */}
             </div>
           </>
         ) : (
