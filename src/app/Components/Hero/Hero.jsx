@@ -95,7 +95,7 @@ const Hero = () => {
             </span>
             <br />
             <span className="bg-gradient-to-r from-[#ceea45] via-[#b8d93c] to-[#ceea45] bg-clip-text text-transparent">
-              Creators with 
+             Connecting Creators with 
             </span>
             <br />
             <span className="bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
