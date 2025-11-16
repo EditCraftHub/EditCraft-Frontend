@@ -2,43 +2,55 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { brain, content, thumbnail, video } from '@/app/Assets/images/Images';
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 
 const Webflow = () => {
   const [visibleElements, setVisibleElements] = useState(new Set());
-  const [isMobile, setIsMobile] = useState(false);
   const observerRef = useRef(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Detect mobile for performance optimizations
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    setIsMounted(true);
 
-    // Optimized IntersectionObserver
+    // Improved intersection observer
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setVisibleElements((prev) => new Set([...prev, entry.target.dataset.animate]));
+            const element = entry.target;
+            const animateId = element.dataset.animate;
+            
+            setVisibleElements((prev) => {
+              const newSet = new Set(prev);
+              newSet.add(animateId);
+              return newSet;
+            });
+            
+            // Stop observing once visible
+            observerRef.current?.unobserve(element);
           }
         });
       },
       { 
-        threshold: 0.1,
-        rootMargin: '50px' // Start loading earlier
+        threshold: 0.1, // Lower threshold for earlier trigger
+        rootMargin: '50px' // Trigger earlier
       }
     );
 
-    const elements = document.querySelectorAll('[data-animate]');
-    elements.forEach((el) => observerRef.current.observe(el));
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      const elements = document.querySelectorAll('[data-animate]');
+      elements.forEach((el) => {
+        if (observerRef.current) {
+          observerRef.current.observe(el);
+        }
+      });
+    }, 100);
 
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      clearTimeout(timer);
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
@@ -47,154 +59,162 @@ const Webflow = () => {
 
   const isVisible = (id) => visibleElements.has(id);
 
+  const services = [
+    {
+      id: 'box1',
+      title: 'Video Editing',
+      subtitle: 'By Skilled Editors',
+      colorClass: 'service-card-1',
+      accentColor: 'ceea45',
+      hoverBg: 'hover:bg-[#ceea45]',
+      hoverBorder: 'hover:border-[#ceea45]',
+      textColor: 'text-[#ceea45]',
+      textColorHover: 'group-hover:text-[#ceea45]',
+      image: video,
+      alt: 'Video Editing',
+      delay: '0.1s'
+    },
+    {
+      id: 'box2',
+      title: 'Thumbnail Design',
+      subtitle: '3x More Clicks',
+      colorClass: 'service-card-2',
+      accentColor: 'purple',
+      hoverBg: 'hover:bg-purple-500',
+      hoverBorder: 'hover:border-purple-500',
+      textColor: 'text-purple-500/50',
+      textColorHover: 'group-hover:text-purple-500',
+      image: thumbnail,
+      alt: 'Thumbnail Design',
+      delay: '0.2s'
+    },
+    {
+      id: 'box3',
+      title: 'Content Strategy',
+      subtitle: 'Niche Experts',
+      colorClass: 'service-card-3',
+      accentColor: 'pink',
+      hoverBg: 'hover:bg-pink-500',
+      hoverBorder: 'hover:border-pink-500',
+      textColor: 'text-pink-500/50',
+      textColorHover: 'group-hover:text-pink-500',
+      image: content,
+      alt: 'Content Strategy',
+      delay: '0.3s'
+    },
+    {
+      id: 'box4',
+      title: 'Script Writing',
+      subtitle: 'Engaging Stories',
+      colorClass: 'service-card-4',
+      accentColor: 'blue',
+      hoverBg: 'hover:bg-blue-500',
+      hoverBorder: 'hover:border-blue-500',
+      textColor: 'text-blue-500/50',
+      textColorHover: 'group-hover:text-blue-500',
+      image: brain,
+      alt: 'Script Writing',
+      delay: '0.4s'
+    }
+  ];
+
+  if (!isMounted) {
+    return null; // Prevent hydration issues
+  }
+
   return (
-    <div id="service" className="overflow-x-hidden bg-gradient-to-br from-black via-gray-900 to-black rounded-[40px] min-h-screen flex items-center justify-center px-6 py-20 relative">
+    <div id="service" className="overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black rounded-[40px] min-h-screen flex items-center justify-center px-6 py-20 relative">
      
       <style jsx>{`
-        /* Use transform instead of position changes for better performance */
         @keyframes slideInLeft {
-          from {
+          0% {
             opacity: 0;
-            transform: translateX(-100px);
+            transform: translate3d(-50px, 0, 0);
           }
-          to {
+          100% {
             opacity: 1;
-            transform: translateX(0);
+            transform: translate3d(0, 0, 0);
           }
         }
 
         @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(100px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes scaleInBounce {
           0% {
             opacity: 0;
-            transform: scale(0.8) rotate(-5deg);
-          }
-          60% {
-            transform: scale(1.05) rotate(2deg);
+            transform: translate3d(50px, 0, 0);
           }
           100% {
             opacity: 1;
-            transform: scale(1) rotate(0);
+            transform: translate3d(0, 0, 0);
+          }
+        }
+
+        @keyframes scaleIn {
+          0% {
+            opacity: 0;
+            transform: translate3d(0, 30px, 0) scale(0.9);
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
           }
         }
 
         @keyframes blob {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
-        @keyframes borderGlow {
-          0%, 100% {
-            box-shadow: 0 0 30px rgba(206, 234, 69, 0.4), 0 0 60px rgba(206, 234, 69, 0.2);
-          }
-          50% {
-            box-shadow: 0 0 50px rgba(206, 234, 69, 0.6), 0 0 80px rgba(206, 234, 69, 0.3);
-          }
-        }
-
-        @keyframes shimmer {
-          0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-          100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        @keyframes pulse {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.6; }
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(15px, -20px, 0) scale(1.05); }
         }
 
         .animate-slide-left {
-          animation: slideInLeft 1s ease-out forwards;
-          will-change: transform, opacity;
+          animation: slideInLeft 0.7s ease-out forwards;
         }
 
         .animate-slide-right {
-          animation: slideInRight 1s ease-out forwards;
-          will-change: transform, opacity;
+          animation: slideInRight 0.7s ease-out forwards;
         }
 
         .animate-scale-bounce {
-          animation: scaleInBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-          will-change: transform, opacity;
-        }
-
-        /* Remove will-change after animation completes */
-        .animate-slide-left.animation-complete,
-        .animate-slide-right.animation-complete,
-        .animate-scale-bounce.animation-complete {
-          will-change: auto;
+          animation: scaleIn 0.6s ease-out forwards;
         }
 
         .animate-blob {
-          animation: blob 7s infinite;
-          will-change: transform;
+          animation: blob 12s ease-in-out infinite;
         }
 
         .service-card {
           position: relative;
           overflow: hidden;
-          transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-                      border-color 0.4s ease,
-                      box-shadow 0.4s ease;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
           background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
           border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .service-card::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: linear-gradient(45deg, transparent 30%, rgba(206, 234, 69, 0.1) 50%, transparent 70%);
-          animation: shimmer 3s linear infinite;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          pointer-events: none;
-        }
-
-        .service-card:hover::before {
-          opacity: 1;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
+          perspective: 1000px;
         }
 
         .service-card:hover {
-          transform: translateY(-10px) scale(1.02);
-          border-color: rgba(206, 234, 69, 0.5);
-          will-change: transform;
-        }
-
-        .service-card:not(:hover) {
-          will-change: auto;
+          transform: translate3d(0, -8px, 0);
         }
 
         .service-card-1:hover {
-          box-shadow: 0 25px 60px rgba(206, 234, 69, 0.3);
-          animation: borderGlow 2s ease-in-out infinite;
+          border-color: rgba(206, 234, 69, 0.5);
+          box-shadow: 0 20px 40px rgba(206, 234, 69, 0.25);
         }
 
         .service-card-2:hover {
-          box-shadow: 0 25px 60px rgba(139, 92, 246, 0.3);
+          border-color: rgba(139, 92, 246, 0.5);
+          box-shadow: 0 20px 40px rgba(139, 92, 246, 0.25);
         }
 
         .service-card-3:hover {
-          box-shadow: 0 25px 60px rgba(236, 72, 153, 0.3);
+          border-color: rgba(236, 72, 153, 0.5);
+          box-shadow: 0 20px 40px rgba(236, 72, 153, 0.25);
         }
 
         .service-card-4:hover {
-          box-shadow: 0 25px 60px rgba(59, 130, 246, 0.3);
+          border-color: rgba(59, 130, 246, 0.5);
+          box-shadow: 0 20px 40px rgba(59, 130, 246, 0.25);
         }
 
         .corner-accent {
@@ -202,7 +222,7 @@ const Webflow = () => {
           width: 20px;
           height: 20px;
           border: 2px solid currentColor;
-          transition: width 0.3s ease, height 0.3s ease;
+          transition: all 0.3s ease;
           z-index: 10;
           pointer-events: none;
         }
@@ -222,60 +242,22 @@ const Webflow = () => {
         }
 
         .service-card:hover .corner-accent {
-          width: 30px;
-          height: 30px;
+          width: 28px;
+          height: 28px;
         }
 
         .learn-more-btn {
-          position: relative;
-          overflow: hidden;
-          transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        .learn-more-btn::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-          transition: left 0.5s ease;
-          pointer-events: none;
-        }
-
-        .service-card:hover .learn-more-btn::before {
-          left: 100%;
+          transition: all 0.3s ease;
         }
 
         .image-container {
-          transition: transform 0.4s ease, filter 0.4s ease;
-          will-change: auto;
+          transition: transform 0.3s ease;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
         }
 
         .service-card:hover .image-container {
-          transform: scale(1.1) rotate(5deg);
-          will-change: transform;
-        }
-
-        .service-card:not(:hover) .image-container {
-          will-change: auto;
-        }
-
-        .service-card-1:hover .image-container {
-          filter: drop-shadow(0 0 20px rgba(206, 234, 69, 0.6));
-        }
-
-        .service-card-2:hover .image-container {
-          filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
-        }
-
-        .service-card-3:hover .image-container {
-          filter: drop-shadow(0 0 20px rgba(236, 72, 153, 0.6));
-        }
-
-        .service-card-4:hover .image-container {
-          filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6));
+          transform: translate3d(0, 0, 0) scale(1.08);
         }
 
         .text-underline-effect {
@@ -291,47 +273,27 @@ const Webflow = () => {
           width: 0;
           height: 2px;
           background: currentColor;
-          transition: width 0.4s ease;
+          transition: width 0.3s ease;
         }
 
         .service-card:hover .text-underline-effect::after {
           width: 100%;
         }
 
-        .grid-pattern {
-          background-image: 
-            linear-gradient(rgba(206, 234, 69, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(206, 234, 69, 0.03) 1px, transparent 1px);
-          background-size: 50px 50px;
-          pointer-events: none;
-        }
-
-        .pulse-dot {
-          animation: pulse 2s ease-in-out infinite;
-          will-change: opacity;
-        }
-
-        .animation-delay-2s { animation-delay: 2s; }
-        .animation-delay-4s { animation-delay: 4s; }
-        .animation-delay-6s { animation-delay: 6s; }
-        .animation-delay-8s { animation-delay: 8s; }
-
-        /* Mobile optimizations */
-        @media (max-width: 767px) {
-          .service-card::before {
-            animation: none;
-          }
-          
+        @media (max-width: 768px) {
           .animate-blob {
-            animation-duration: 10s; /* Slower on mobile */
+            animation-duration: 15s;
           }
           
           .service-card:hover {
-            transform: translateY(-5px) scale(1.01); /* Reduced movement */
+            transform: translate3d(0, -5px, 0);
+          }
+
+          .service-card:hover .image-container {
+            transform: translate3d(0, 0, 0) scale(1.05);
           }
         }
 
-        /* Reduce motion for users who prefer it */
         @media (prefers-reduced-motion: reduce) {
           *,
           *::before,
@@ -343,33 +305,21 @@ const Webflow = () => {
         }
       `}</style>
 
-      {/* Grid Pattern Background */}
-      <div className="absolute inset-0 grid-pattern"></div>
-
-      {/* Animated Background Blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-[#ceea45]/20 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob animation-delay-2s"></div>
-        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob animation-delay-4s"></div>
-        <div className="absolute top-1/2 right-1/3 w-96 h-96 bg-blue-500/10 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-6s"></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-[#ceea45]/15 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-8s"></div>
+      {/* Background Blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-[#ceea45]/20 rounded-full blur-3xl animate-blob"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-blob" style={{ animationDelay: '4s' }}></div>
       </div>
 
-      {/* Floating Accent Dots */}
-      <div className="absolute top-20 left-1/4 w-2 h-2 bg-[#ceea45] rounded-full pulse-dot"></div>
-      <div className="absolute bottom-40 right-1/4 w-2 h-2 bg-[#ceea45] rounded-full pulse-dot" style={{ animationDelay: '0.5s' }}></div>
-      <div className="absolute top-1/2 left-10 w-3 h-3 bg-[#ceea45] rounded-full pulse-dot" style={{ animationDelay: '1s' }}></div>
-      <div className="absolute bottom-20 right-20 w-2 h-2 bg-[#ceea45] rounded-full pulse-dot" style={{ animationDelay: '1.5s' }}></div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12 w-full max-w-6xl relative z-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-20 gap-y-10 lg:gap-y-12 w-full max-w-6xl relative z-10">
         
-        {/* ===== Title Box ===== */}
+        {/* Title */}
         <div 
           data-animate="title"
-          className={`flex flex-col justify-center ${isVisible('title') ? 'animate-slide-left' : 'opacity-0'}`}
+          className={`flex flex-col justify-center transition-opacity duration-300 ${isVisible('title') ? 'animate-slide-left' : 'opacity-0'}`}
         >
           <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight text-white">
-            Our Comprehensive <br /> 
+            Our Comprehensive<br /> 
             <span className="bg-gradient-to-r from-[#ceea45] via-[#b8d93c] to-[#a3c933] bg-clip-text text-transparent">
               & Diverse Services
             </span>
@@ -377,154 +327,72 @@ const Webflow = () => {
           <div className="mt-6 w-24 h-1 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] rounded-full"></div>
         </div>
 
-        {/* ===== Description Box ===== */}
+        {/* Description */}
         <div 
           data-animate="description"
-          className={`font-medium text-gray-300 text-sm sm:text-base leading-relaxed ${isVisible('description') ? 'animate-slide-right' : 'opacity-0'}`}
+          className={`font-medium text-gray-300 text-sm sm:text-base leading-relaxed transition-opacity duration-300 ${isVisible('description') ? 'animate-slide-right' : 'opacity-0'}`}
         >
           <p>
-            At <span className="font-black bg-gradient-to-r from-[#ceea45] to-[#b8d93c] bg-clip-text text-transparent">EDITCRAFT</span>, we deliver
-            <span className="text-[#ceea45] font-bold"> production-grade quality</span> 
-            with exceptional time management. Our top-tier editors help you elevate
-            your brand and master the digital era with world-class editing precision.
+            EditCraft is India's first marketplace built specifically for the creator economy. 
+            At <span className="font-black bg-gradient-to-r from-[#ceea45] to-[#b8d93c] bg-clip-text text-transparent">EDITCRAFT</span>, find editors in
+            <span className="text-[#ceea45] font-bold"> 24 hours</span>—every editor portfolio is verified with India-focused fair pricing. 
+            Direct chat with editors with <span className="text-[#ceea45] font-bold">0% commission</span>.
           </p>
         </div>
 
-        {/* ===== Box 1 - Video Editing ===== */}
-             <div 
-          data-animate="box2"
-          className={`service-card service-card-2 rounded-[40px] flex items-center justify-between px-6 py-6 h-[200px] cursor-pointer group ${
-            isVisible('box2') ? 'animate-scale-bounce' : 'opacity-0'
-          }`}
-          style={{ animationDelay: '0.2s' }}
-        >
-          <div className="corner-accent corner-tl text-[#ceea45] group-hover:text-[#ceea45]"></div>
-          <div className="corner-accent corner-br text-[#ceea45] group-hover:text-[#ceea45]"></div>
-          
-          <div className="flex flex-col justify-between h-full relative z-10">
-            <h2 className="font-bold text-xl text-white text-underline-effect">
-              Production grade<br/>Video Editing
-            </h2>
-            <div className="learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[40px] w-[120px] rounded-full flex items-center justify-between px-3 group-hover:bg-[#ceea45]  transition-all duration-300">
-              <FaRegArrowAltCircleRight className="text-white group-hover:text-white rotate-[-45deg] transition-all duration-300" size={18} />
-              <h3 className='text-xs text-white group-hover:text-white font-bold uppercase transition-all duration-300'>learn more</h3>
-            </div>
-          </div>
-          <div className="image-container">
-            <Image 
-              src={video} 
-              alt="Thumbnail Editing" 
-              width={140} 
-              height={140} 
-              className="object-contain"
-              quality={90}
-              loading="lazy"
-            />
-          </div>
-        </div>
-
-        {/* ===== Box 2 - Thumbnail Editing ===== */}
-        <div 
-          data-animate="box2"
-          className={`service-card service-card-2 rounded-[40px] flex items-center justify-between px-6 py-6 h-[200px] cursor-pointer group ${
-            isVisible('box2') ? 'animate-scale-bounce' : 'opacity-0'
-          }`}
-          style={{ animationDelay: '0.2s' }}
-        >
-          <div className="corner-accent corner-tl text-purple-500/50 group-hover:text-purple-500"></div>
-          <div className="corner-accent corner-br text-purple-500/50 group-hover:text-purple-500"></div>
-          
-          <div className="flex flex-col justify-between h-full relative z-10">
-            <h2 className="font-bold text-xl text-white text-underline-effect">
-              Production grade<br/>Thumbnail Editing
-            </h2>
-            <div className="learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[40px] w-[120px] rounded-full flex items-center justify-between px-3 group-hover:bg-purple-500 group-hover:border-purple-500 transition-all duration-300">
-              <FaRegArrowAltCircleRight className="text-white group-hover:text-white rotate-[-45deg] transition-all duration-300" size={18} />
-              <h3 className='text-xs text-white group-hover:text-white font-bold uppercase transition-all duration-300'>learn more</h3>
-            </div>
-          </div>
-          <div className="image-container">
-            <Image 
-              src={thumbnail} 
-              alt="Thumbnail Editing" 
-              width={140} 
-              height={140} 
-              className="object-contain"
-              quality={90}
-              loading="lazy"
-            />
-          </div>
-        </div>
-
-        {/* ===== Box 3 - Content Creation ===== */}
-        <div 
-          data-animate="box3"
-          className={`service-card service-card-3 rounded-[40px] flex items-center justify-between px-6 py-6 h-[200px] cursor-pointer group ${
-            isVisible('box3') ? 'animate-scale-bounce' : 'opacity-0'
-          }`}
-          style={{ animationDelay: '0.3s' }}
-        >
-          <div className="corner-accent corner-tl text-pink-500/50 group-hover:text-pink-500"></div>
-          <div className="corner-accent corner-br text-pink-500/50 group-hover:text-pink-500"></div>
-          
-          <div className="flex flex-col justify-between h-full relative z-10">
-            <h2 className="font-bold text-xl text-white text-underline-effect">
-              Production grade<br/>Content Creation
-            </h2>
-            <div className="learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[40px] w-[120px] rounded-full flex items-center justify-between px-3 group-hover:bg-pink-500 group-hover:border-pink-500 transition-all duration-300">
-              <FaRegArrowAltCircleRight className="text-white group-hover:text-white rotate-[-45deg] transition-all duration-300" size={18} />
-              <h3 className='text-xs text-white group-hover:text-white font-bold uppercase transition-all duration-300'>learn more</h3>
-            </div>
-          </div>
-          <div className="image-container">
-            <Image 
-              src={content} 
-              alt="Content Creation" 
-              width={140} 
-              height={140} 
-              className="object-contain"
-              quality={90}
-              loading="lazy"
-            />
-          </div>
-        </div>
-
-        {/* ===== Box 4 - Script Writing ===== */}
-        <div 
-          data-animate="box4"
-          className={`service-card service-card-4 rounded-[40px] flex items-center justify-between px-6 py-6 h-[200px] cursor-pointer group ${
-            isVisible('box4') ? 'animate-scale-bounce' : 'opacity-0'
-          }`}
-          style={{ animationDelay: '0.4s' }}
-        >
-          <div className="corner-accent corner-tl text-blue-500/50 group-hover:text-blue-500"></div>
-          <div className="corner-accent corner-br text-blue-500/50 group-hover:text-blue-500"></div>
-          
-          <div className="flex flex-col justify-between h-full relative z-10">
-            <h2 className="font-bold text-xl text-white text-underline-effect">
-              Production grade<br/>Script Writing
-            </h2>
-            <div className="learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[40px] w-[120px] rounded-full flex items-center justify-between px-3 group-hover:bg-blue-500 group-hover:border-blue-500 transition-all duration-300">
-              <FaRegArrowAltCircleRight className="text-white group-hover:text-white rotate-[-45deg] transition-all duration-300" size={18} />
-              <h3 className='text-xs text-white group-hover:text-white font-bold uppercase transition-all duration-300'>learn more</h3>
-            </div>
-          </div>
-          <div className="image-container">
-            <Image 
-              src={brain} 
-              alt="Script Writing" 
-              width={140} 
-              height={140} 
-              className="object-contain"
-              quality={90}
-              loading="lazy"
-            />
-          </div>
-        </div>
+        {/* Service Cards */}
+        {services.map((service) => (
+          <ServiceCard
+            key={service.id}
+            service={service}
+            isVisible={isVisible(service.id)}
+          />
+        ))}
 
       </div>
     </div>
   );
 };
+
+// Memoized ServiceCard component
+const ServiceCard = React.memo(({ service, isVisible }) => {
+  return (
+    <div 
+      data-animate={service.id}
+      className={`service-card ${service.colorClass} rounded-[40px] flex items-center justify-between px-6 py-6 h-[200px] cursor-pointer group transition-opacity duration-300 ${
+        isVisible ? 'animate-scale-bounce' : 'opacity-0'
+      }`}
+      style={{ animationDelay: service.delay }}
+    >
+      <div className={`corner-accent corner-tl ${service.textColor} ${service.textColorHover}`}></div>
+      <div className={`corner-accent corner-br ${service.textColor} ${service.textColorHover}`}></div>
+      
+      <div className="flex flex-col justify-between h-full relative z-10">
+        <h2 className="font-bold text-lg sm:text-xl text-white text-underline-effect leading-snug">
+          {service.title}<br/>{service.subtitle}
+        </h2>
+        <Link href="/Pages/Main/home">
+          <div className={`learn-more-btn bg-white/10 backdrop-blur-sm border-2 border-white/20 h-[38px] sm:h-[40px] w-[110px] sm:w-[120px] rounded-full flex items-center justify-between px-2.5 sm:px-3 group-hover:text-white ${service.hoverBg} ${service.hoverBorder} transition-all duration-300`}>
+            <FaRegArrowAltCircleRight className="text-white rotate-[-45deg] transition-all duration-300" size={16} />
+            <h3 className='text-[10px] sm:text-xs text-white font-bold uppercase transition-all duration-300'>Learn More</h3>
+          </div>
+        </Link>
+      </div>
+      <div className="image-container flex-shrink-0">
+        <Image 
+          src={service.image} 
+          alt={service.alt} 
+          width={110} 
+          height={110} 
+          className="object-contain sm:w-[130px] sm:h-[130px] md:w-[140px] md:h-[140px]"
+          quality={75}
+          loading="lazy"
+        />
+      </div>
+    </div>
+  );
+});
+
+ServiceCard.displayName = 'ServiceCard';
 
 export default Webflow;
