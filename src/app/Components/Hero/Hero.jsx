@@ -108,8 +108,8 @@ const Hero = () => {
             ref={descriptionRef}
             className="mt-4 lg:mt-6 text-gray-300 leading-relaxed text-base sm:text-lg max-w-xl"
           >
-           Find skilled video editors<span className="text-[#ceea45] font-semibold"> thumbnail designers</span>, and scriptwriters in 24 hours.
-            Or join as an editor and get consistent paid projects<span className="text-[#ceea45] font-semibold"> from verified creators</span>.
+           Find skilled video editors, <span className="text-[#ceea45] font-semibold">thumbnail designers</span>, and scriptwriters in 24 hours.
+            Or join as an editor and get consistent paid projects <span className="text-[#ceea45] font-semibold">from verified creators</span>.
           </p>
 
           {/* Stats */}
@@ -167,6 +167,7 @@ const Hero = () => {
             <div className="absolute inset-4 rounded-full border-2 border-white/20"></div>
             
             <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-[290px] md:h-[290px] lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-gradient-to-br from-black via-gray-900 to-black rounded-full flex items-center justify-center shadow-inner overflow-hidden">
+              {/* Image Container - loads instantly */}
               <div className="relative w-full h-full flex items-end justify-center">
                 <Image
                   src={boy1}
@@ -175,9 +176,8 @@ const Hero = () => {
                   height={300}
                   className="object-contain object-bottom h-[95%] w-auto drop-shadow-2xl"
                   priority
-                  quality={75}
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                  loading="eager"
+                  quality={90}
                   sizes="(max-width: 640px) 130px, (max-width: 1024px) 170px, 210px"
                 />
               </div>
