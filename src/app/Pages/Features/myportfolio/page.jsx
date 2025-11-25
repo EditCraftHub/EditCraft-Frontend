@@ -11,9 +11,11 @@ import {
 } from 'lucide-react';
 import { useGetMyPortfolioQuery } from '@/app/Store/apiSclice/portfolioApiSlice';
 import { toast } from 'react-hot-toast';
+import ProtectedRoute from '@/app/Components/ProtectedRoute/ProtectedRoute';
 
 // Animated Background Component - Smoother animations
 const AnimatedBackground = () => (
+ 
   <div className="fixed inset-0 overflow-hidden pointer-events-none">
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(206,234,69,0.12),transparent_50%)]" />
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(147,51,234,0.08),transparent_50%)]" />
@@ -101,6 +103,8 @@ const handleCopy = async () => {
   ];
 
   return (
+    
+
     <AnimatePresence>
       {isOpen && (
         <>
@@ -438,6 +442,7 @@ const TimelineItem = ({ item, type, index }) => (
 );
 
 export default function ViewMyPortfolio() {
+  
   const router = useRouter();
   const { data: portfolioData, isLoading, error } = useGetMyPortfolioQuery();
   const [portfolio, setPortfolio] = useState(null);
@@ -495,6 +500,7 @@ const quickCopy = async () => {
 
   if (isLoading) {
     return (
+      
       <div className="min-h-screen bg-black flex items-center justify-center">
         <AnimatedBackground />
         <motion.div
@@ -566,6 +572,7 @@ const quickCopy = async () => {
   }
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <AnimatedBackground />
       
@@ -1089,5 +1096,6 @@ const quickCopy = async () => {
         }
       `}</style>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -16,6 +16,7 @@ import {
   useDeleteVideoMutation
 } from '@/app/Store/apiSclice/portfolioApiSlice';
 import { toast } from 'react-hot-toast';
+import ProtectedRoute from '@/app/Components/ProtectedRoute/ProtectedRoute';
 
 // ✅ ADD THIS COMPONENT HERE - RIGHT AFTER IMPORTS
 const ExternalLink = ({ url, platform, children }) => {
@@ -664,6 +665,7 @@ export default function CreateEditPortfolio() {
   }
 
   return (
+    <ProtectedRoute>
     <LazyMotion features={domAnimation}>
       <div className="min-h-screen bg-black text-white">
         {/* Optimized Background */}
@@ -1686,5 +1688,6 @@ export default function CreateEditPortfolio() {
         </div>
       </div>
     </LazyMotion>
+    </ProtectedRoute>
   );
 }
