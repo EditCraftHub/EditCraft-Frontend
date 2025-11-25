@@ -14,7 +14,7 @@ import {
 import { selectIsAuthenticated, selectCurrentUser } from '@/app/Store/Sclies/authSlice'
 import { useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
-import { Search, Eye, Heart, MessageCircle, Share2, MoreVertical, Send, X, Sparkles } from 'lucide-react'
+import { Search, Eye, Heart, MessageCircle, Share2, MoreVertical, Send, X, Sparkles, Play, Image as ImageIcon } from 'lucide-react'
 
 // Popup Menu Component
 const PostMenu = ({ isOpen, onClose, onViewPost, onShare, onLike, isLiked }) => {
@@ -48,10 +48,7 @@ const PostMenu = ({ isOpen, onClose, onViewPost, onShare, onLike, isLiked }) => 
 
   return (
     <>
-      <div 
-        className="fixed inset-0 z-40" 
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-40" onClick={onClose} />
       
       <motion.div
         ref={menuRef}
@@ -135,6 +132,118 @@ const Toast = ({ show, message, type, onClose }) => {
   )
 }
 
+// Media Gallery Component - Videos First!
+const MediaGallery = ({ videos = [], images = [] }) => {
+  const allMedia = [
+    ...videos.map(v => ({ type: 'video', url: v })),
+    ...images.map(i => ({ type: 'image', url: i }))
+  ]
+
+  if (allMedia.length === 0) return null
+
+  // Smart grid layout
+  const getGridLayout = () => {
+    if (allMedia.length === 1) return 'grid-cols-1'
+    if (allMedia.length === 2) return 'grid-cols-2'
+    if (allMedia.length === 3) return 'grid-cols-3'
+    return 'grid-cols-2 lg:grid-cols-3'
+  }
+
+  return (
+    <div className={`grid ${getGridLayout()} gap-3 mb-4`}>
+      {allMedia.slice(0, 6).map((media, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: index * 0.05 }}
+          className="relative aspect-video rounded-xl overflow-hidden group/media cursor-pointer"
+        >
+          {media.type === 'video' ? (
+            <>
+              <video
+                src={media.url}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/media:opacity-100 transition-all duration-300 flex items-center justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="p-3 bg-white/20 backdrop-blur-sm rounded-full"
+                >
+                  <Play className="w-6 h-6 text-white fill-white" />
+                </motion.div>
+              </div>
+              <div className="absolute top-2 right-2 px-2 py-1 bg-black/70 rounded-lg text-xs text-white font-bold flex items-center gap-1">
+                <Play className="w-3 h-3 fill-white" />
+                VIDEO
+              </div>
+            </>
+          ) : (
+            <>
+              <img
+                src={media.url}
+                alt={`Media ${index + 1}`}
+                className="w-full h-full object-cover group-hover/media:scale-110 transition-transform duration-300"
+                loading="lazy"
+              />
+              <div className="absolute top-2 right-2 px-2 py-1 bg-black/70 rounded-lg text-xs text-white font-bold flex items-center gap-1">
+                <ImageIcon className="w-3 h-3" />
+                IMAGE
+              </div>
+            </>
+          )}
+
+          {/* Show +N more */}
+          {index === 5 && allMedia.length > 6 && (
+            <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+              <span className="text-white text-3xl font-black">
+                +{allMedia.length - 6}
+              </span>
+            </div>
+          )}
+
+          <div className="absolute inset-0 border-2 border-[#ceea45]/0 group-hover/media:border-[#ceea45]/50 rounded-xl transition-all duration-300" />
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+// ✅ BENTO CARD
+const BentoCard = ({ children, className = '', delay = 0, span = '', hover = true }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        duration: 0.6, 
+        delay, 
+        ease: [0.22, 1, 0.36, 1]
+      }}
+      whileHover={hover ? { 
+        y: -8, 
+        transition: { duration: 0.3, ease: "easeOut" } 
+      } : {}}
+      className={`group relative bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/[0.08] overflow-hidden ${span} ${className}`}
+    >
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#ceea45]/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-gray-900/95 to-black/95" />
+      
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 overflow-hidden">
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.07] to-transparent"
+          initial={{ x: '-100%' }}
+          whileHover={{ x: '100%' }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+        />
+      </div>
+      
+      <div className="relative z-10 h-full">{children}</div>
+    </motion.div>
+  )
+}
+
 const AllPost = () => {
   const router = useRouter()
   const isAuthenticated = useSelector(selectIsAuthenticated)
@@ -165,8 +274,6 @@ const AllPost = () => {
   const [addComment] = useAddCommentMutation()
   const [likeComment] = useLikeCommentMutation()
   const [addReply] = useAddReplyMutation()
-
-
   const [getOrCreateChat, { isLoading: isCreatingChat }] = useGetOrCreateChatMutation()
 
   const allPosts = data?.posts
@@ -181,7 +288,6 @@ const AllPost = () => {
     }
   }, [isError, error, router])
 
-  // ✅ Improved search with better filtering
   const filteredPosts = allPosts?.filter(post => {
     const query = debouncedSearch.toLowerCase()
     if (!query) return true
@@ -263,29 +369,21 @@ const AllPost = () => {
     }
   }
 
-const handleConnect = async (userId) => {
-  if (!userId) return
-  
-  try {
-    console.log("📤 Creating/getting chat with user:", userId)
+  const handleConnect = async (userId) => {
+    if (!userId) return
     
-    // Create/get chat first
-    const chatResult = await getOrCreateChat(userId).unwrap()
-    console.log("✅ Chat ready:", chatResult)
-    
-    // ✅ Navigate to messages page WITH the chatId in URL
-    router.push(`/Pages/Main/messages?chatId=${chatResult.chat._id}`)
-    
-  } catch (error) {
-    console.error("❌ Failed to open chat:", error)
-    setToast({ 
-      show: true, 
-      message: 'Failed to open chat. Please try again.', 
-      type: 'error' 
-    })
+    try {
+      const chatResult = await getOrCreateChat(userId).unwrap()
+      router.push(`/Pages/Main/messages?chatId=${chatResult.chat._id}`)
+    } catch (error) {
+      console.error("Failed to open chat:", error)
+      setToast({ 
+        show: true, 
+        message: 'Failed to open chat. Please try again.', 
+        type: 'error' 
+      })
+    }
   }
-}
-
 
   const toggleComments = (postId) => {
     setShowComments(prev => ({
@@ -323,20 +421,18 @@ const handleConnect = async (userId) => {
     }
   }
 
-const gouserId = (profileId) => {
-  // ✅ Extract ID if an object is passed
-  const userId = typeof profileId === 'string' 
-    ? profileId 
-    : profileId?._id || profileId?.id;
-  
-  if (!userId) {
-    console.error('Invalid user ID:', profileId);
-    return;
-  }
-  
-  console.log('Navigating to user:', userId);
-  router.replace(`/Pages/Main/profile/${userId}`);
-};
+  const goToUserId = (profileId) => {
+    const userId = typeof profileId === 'string' 
+      ? profileId 
+      : profileId?._id || profileId?.id;
+    
+    if (!userId) {
+      console.error('Invalid user ID:', profileId);
+      return;
+    }
+    
+    router.replace(`/Pages/Main/profile/${userId}`);
+  };
 
   const isPostLikedByUser = (post) => {
     return post.likes?.some(like => like === currentUser?._id || like?._id === currentUser?._id)
@@ -362,18 +458,30 @@ const gouserId = (profileId) => {
 
   return (
     <ProtectedRoute>
-      <div className='h-full w-full overflow-y-auto bg-gradient-to-br from-[#ceea45] via-gray-950 to-black'>
+      <div className='h-full w-full overflow-y-auto bg-black'>
         
         {/* Animated Background */}
-        <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-[#ceea45]/5 rounded-full mix-blend-screen filter blur-3xl opacity-20" />
-          <div className="absolute bottom-20 right-10 w-72 h-72 bg-purple-500/5 rounded-full mix-blend-screen filter blur-3xl opacity-20" />
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <motion.div 
+            className="absolute top-20 left-10 w-72 h-72 bg-[#ceea45]/10 rounded-full mix-blend-screen filter blur-3xl opacity-30"
+            animate={{ x: [0, 40, -40, 0], y: [0, -40, 40, 0] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div 
+            className="absolute bottom-20 right-10 w-72 h-72 bg-purple-500/10 rounded-full mix-blend-screen filter blur-3xl opacity-30"
+            animate={{ x: [0, -40, 40, 0], y: [0, 40, -40, 0] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          />
         </div>
 
-        <div className="relative z-10 ">
+        <div className="relative z-10">
           {/* Search Bar */}
-          <div className="sticky top-0 backdrop-blur-xl bg-black/40 z-20 pb-4  px-1 md:px-4  lg:px-4">
-            <div className="relative group">
+          <div className="sticky top-0 backdrop-blur-xl bg-black/40 z-20 pb-4 px-1 md:px-4 lg:px-4">
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative group"
+            >
               <div className="absolute inset-0 bg-gradient-to-r from-[#ceea45] to-purple-500 rounded-2xl opacity-0 group-focus-within:opacity-20 transition-opacity duration-300 blur" />
               
               <div className="relative bg-gradient-to-br from-gray-900 to-black border-2 border-[#ceea45]/30 group-focus-within:border-[#ceea45] rounded-2xl transition-all duration-300 flex items-center px-4">
@@ -399,7 +507,6 @@ const gouserId = (profileId) => {
                 )}
               </div>
 
-              {/* Search hints */}
               {debouncedSearch && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -409,185 +516,149 @@ const gouserId = (profileId) => {
                   Found {filteredPosts?.length || 0} result{filteredPosts?.length !== 1 ? 's' : ''}
                 </motion.div>
               )}
-            </div>
+            </motion.div>
           </div>
 
-          {/* Posts List */}
-          <div className="space-y-4 px-1 lg:px-4 md:px4 py-4">
+          {/* Posts Grid */}
+          <div className="max-w-7xl mx-auto space-y-5 px-2 md:px-4 lg:px-4 py-6">
             {filteredPosts && filteredPosts.length > 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="space-y-4"
+                className="space-y-5"
               >
                 {filteredPosts.map((post, index) => (
-                  <motion.div
-                    key={post._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="group bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl border border-[#ceea45] hover:border-[#ceea45] overflow-hidden hover:shadow-xl hover:shadow-[#ceea45]/10 transition-all duration-300"
-                  >
-                    {/* Post Header */}
-                    <div className="p-4 md:p-5 flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-[#ceea45]/10">
-                      <div onClick={() => gouserId(post.userId?._id) } className="flex items-start gap-3 flex-1">
-                        <motion.img
-                          whileHover={{ scale: 1.1 }}
-                          src={post.userId?.profilePic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
-                          alt={post.userId?.username}
-                          className="w-12 h-12 rounded-xl object-cover border-2 border-[#ceea45]/30 flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-bold text-white truncate text-lg">
-                              {post.userId?.username || 'Anonymous'}
-                            </h3>
-                            {post.userId?.fullname && (
-                              <span className="text-sm text-[#ceea45]/70">
-                                • {post.userId.fullname}
+                  <BentoCard key={post._id} delay={index * 0.05}>
+                    <div className="p-6 md:p-8">
+                      
+                      {/* Post Header */}
+                      <div className="flex items-start justify-between gap-4 mb-6 pb-4 border-b border-[#ceea45]/10">
+                        <motion.div 
+                          onClick={() => goToUserId(post.userId?._id)}
+                          whileHover={{ scale: 1.02 }}
+                          className="flex items-start gap-4 flex-1 cursor-pointer"
+                        >
+                          <motion.img
+                            whileHover={{ scale: 1.1 }}
+                            src={post.userId?.profilePic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
+                            alt={post.userId?.username}
+                            className="w-14 h-14 rounded-xl object-cover border-2 border-[#ceea45]/30 flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="font-black text-white text-lg hover:text-[#ceea45] transition-colors">
+                                {post.userId?.username || 'Anonymous'}
+                              </h3>
+                              {post.userId?.fullname && (
+                                <span className="text-sm text-[#ceea45]/70">
+                                  {post.userId.fullname}
+                                </span>
+                              )}
+                            </div>
+                            {post.userId?.email && (
+                              <p className="text-xs text-gray-400 truncate">{post.userId.email}</p>
+                            )}
+                          </div>
+                        </motion.div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-3">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleConnect(post.userId?._id)}
+                            disabled={isCreatingChat}
+                            className="px-5 py-2 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black font-bold rounded-xl hover:shadow-lg hover:shadow-[#ceea45]/50 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isCreatingChat ? 'Opening...' : 'Message'}
+                          </motion.button>
+
+                          <div className="relative">
+                            <motion.button 
+                              whileHover={{ rotate: 90 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => setOpenMenuId(openMenuId === post._id ? null : post._id)}
+                              className="p-2 hover:bg-[#ceea45]/10 rounded-xl transition-all"
+                            >
+                              <MoreVertical className="w-5 h-5 text-[#ceea45]" />
+                            </motion.button>
+                            <PostMenu 
+                              isOpen={openMenuId === post._id}
+                              onClose={() => setOpenMenuId(null)}
+                              onViewPost={() => router.push(`/Pages/Main/post/${post._id}`)}
+                              onShare={() => handleShare(post)}
+                              onLike={() => handleLike(post._id)}
+                              isLiked={isPostLikedByUser(post)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Post Content */}
+                      <div className="mb-6">
+                        <h2 className="text-2xl font-black text-white mb-3 hover:text-[#ceea45] transition-colors">
+                          {post.title}
+                        </h2>
+                        <p className="text-gray-300 text-base leading-relaxed mb-4">
+                          {post.description}
+                        </p>
+
+                        {/* Tags */}
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {post.tags.slice(0, 5).map((tag, i) => (
+                              <motion.span
+                                key={i}
+                                whileHover={{ scale: 1.05 }}
+                                className="px-3 py-1 bg-[#ceea45]/10 text-[#ceea45] text-xs font-bold rounded-full border border-[#ceea45]/30 hover:border-[#ceea45]/50 transition-all cursor-pointer"
+                              >
+                                #{tag}
+                              </motion.span>
+                            ))}
+                            {post.tags.length > 5 && (
+                              <span className="px-3 py-1 bg-gray-800 text-gray-400 text-xs font-bold rounded-full">
+                                +{post.tags.length - 5}
                               </span>
                             )}
                           </div>
-                          {post.userId?.email && (
-                            <p className="text-xs text-gray-400 truncate">{post.userId.email}</p>
-                          )}
-                        </div>
+                        )}
                       </div>
 
-                      {/* Action buttons */}
-                      <div className="flex items-start gap-2 sm:items-center">
-<motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  onClick={() => handleConnect(post.userId?._id)}
-  disabled={isCreatingChat}
-  className="px-4 py-2 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black font-bold rounded-xl hover:shadow-lg hover:shadow-[#ceea45]/50 transition-all text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
->
-  {isCreatingChat ? (
-    <div className="flex items-center gap-2">
-      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-      Opening...
-    </div>
-  ) : (
-    'Message'
-  )}
-</motion.button>
-
-                        <div className="relative ml-10">
-                          <motion.button 
-                            whileHover={{ rotate: 90 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setOpenMenuId(openMenuId === post._id ? null : post._id)}
-                            className="p-2 hover:bg-[#ceea45]/10 rounded-xl transition-all"
-                          >
-                            <MoreVertical className="w-5 h-5 text-[#ceea45]" />
-                          </motion.button>
-                          <PostMenu 
-                            isOpen={openMenuId === post._id}
-                            onClose={() => setOpenMenuId(null)}
-                            onViewPost={() => router.push(`/Pages/Main/post/${post._id}`)}
-                            onShare={() => handleShare(post)}
-                            onLike={() => handleLike(post._id)}
-                            isLiked={isPostLikedByUser(post)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Post Content */}
-                    <div className="px-4 md:px-5 py-4">
-                      <h2 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#ceea45] transition-colors">
-                        {post.title}
-                      </h2>
-                      <p className="text-gray-300 text-sm leading-relaxed mb-3 line-clamp-3">
-                        {post.description}
-                      </p>
-
-                      {/* Tags */}
-                      {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {post.tags.slice(0, 4).map((tag, index) => (
-                            <motion.span
-                              key={index}
-                              whileHover={{ scale: 1.05 }}
-                              className="px-3 py-1 bg-[#ceea45]/10 text-[#ceea45] text-xs font-semibold rounded-full border border-[#ceea45]/30 hover:border-[#ceea45]/50 transition-all cursor-pointer"
-                            >
-                              #{tag}
-                            </motion.span>
-                          ))}
-                          {post.tags.length > 4 && (
-                            <span className="px-3 py-1 bg-gray-800 text-gray-400 text-xs font-semibold rounded-full">
-                              +{post.tags.length - 4}
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Images */}
-                      {post.image && post.image.length > 0 && (
-                        <div className={`grid gap-3 mb-4 ${
-                          post.image.length === 1 ? 'grid-cols-1' : 
-                          post.image.length === 2 ? 'grid-cols-2' : 
-                          'grid-cols-3'
-                        }`}>
-                          {post.image.slice(0, 5).map((img, index) => (
-                            <motion.div
-                              key={index}
-                              whileHover={{ scale: 1.05 }}
-                              className="relative aspect-square rounded-xl overflow-hidden group/image cursor-pointer"
-                            >
-                              <img
-                                src={img}
-                                alt={`Post image ${index + 1}`}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                              {index === 4 && post.image.length > 5 && (
-                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                                  <span className="text-white text-2xl font-bold">
-                                    +{post.image.length - 5}
-                                  </span>
-                                </div>
-                              )}
-                            </motion.div>
-                          ))}
-                        </div>
-                      )}
+                      {/* Media Gallery - Videos First! */}
+                      <MediaGallery videos={post.video} images={post.image} />
 
                       {/* Job Details */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span className="px-3 py-1.5 bg-gradient-to-r from-[#ceea45]/20 to-purple-500/20 text-white text-xs font-semibold rounded-lg border border-[#ceea45]/30">
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        <span className="px-4 py-2 bg-gradient-to-r from-[#ceea45]/20 to-purple-500/20 text-white text-sm font-bold rounded-lg border border-[#ceea45]/30">
                           {post.jobType || 'Not specified'}
                         </span>
                         {post.jobDuration && (
-                          <span className="px-3 py-1.5 bg-gray-800 text-gray-300 text-xs font-semibold rounded-lg">
+                          <span className="px-4 py-2 bg-gray-800 text-gray-300 text-sm font-bold rounded-lg">
                             ⏱️ {post.jobDuration}
                           </span>
                         )}
                         {post.price && (
-                          <span className="px-3 py-1.5 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black font-bold text-xs rounded-lg shadow-lg shadow-[#ceea45]/20">
+                          <span className="px-4 py-2 bg-gradient-to-r from-[#ceea45] to-[#b8d93c] text-black font-bold text-sm rounded-lg shadow-lg shadow-[#ceea45]/20">
                             💰 {post.price.amount} {post.price.currency}
                           </span>
                         )}
                       </div>
-                    </div>
 
-                    {/* Post Footer - Actions */}
-                    <div className="px-4 md:px-5 py-3 border-t border-[#ceea45]/10">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-6">
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-between mb-6 pb-6 border-b border-[#ceea45]/10">
+                        <div className="flex items-center gap-8">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleLike(post._id)}
-                            className="flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors group/like"
+                            className="flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors group"
                           >
                             <Heart
                               className={`w-5 h-5 transition-all ${
-                                isPostLikedByUser(post) ? 'fill-red-500 text-red-500 scale-125' : 'group-hover/like:scale-110'
+                                isPostLikedByUser(post) ? 'fill-red-500 text-red-500 scale-125' : 'group-hover:scale-110'
                               }`}
                             />
-                            <span className="text-sm font-medium">{post.likes?.length || 0}</span>
+                            <span className="text-sm font-bold">{post.likes?.length || 0}</span>
                           </motion.button>
                           
                           <motion.button 
@@ -597,7 +668,7 @@ const gouserId = (profileId) => {
                             className="flex items-center gap-2 text-gray-400 hover:text-[#ceea45] transition-colors"
                           >
                             <MessageCircle className="w-5 h-5" />
-                            <span className="text-sm font-medium">{post.comments?.length || 0}</span>
+                            <span className="text-sm font-bold">{post.comments?.length || 0}</span>
                           </motion.button>
                           
                           <motion.button 
@@ -614,19 +685,19 @@ const gouserId = (profileId) => {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => router.push(`/Pages/Main/post/${post._id}`)}
-                          className="flex items-center gap-2 px-4 py-2 bg-[#ceea45]/10 hover:bg-[#ceea45]/20 text-[#ceea45] rounded-lg transition-all border border-[#ceea45]/30 font-semibold text-sm"
+                          className="flex items-center gap-2 px-4 py-2 bg-[#ceea45]/10 hover:bg-[#ceea45]/20 text-[#ceea45] rounded-lg transition-all border border-[#ceea45]/30 font-bold"
                         >
                           <Eye className="w-4 h-4" />
-                          View Post
+                          View Full
                         </motion.button>
                       </div>
 
                       {/* Comment Input */}
-                      <div className="flex items-center gap-2 mb-3 p-3 bg-gray-800/50 rounded-xl border border-[#ceea45]/10">
+                      <div className="flex items-center gap-3 mb-4 p-4 bg-[#ceea45]/5 rounded-xl border border-[#ceea45]/20">
                         <img
                           src={currentUser?.profilePic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
                           alt="Your profile"
-                          className="w-8 h-8 rounded-lg object-cover"
+                          className="w-10 h-10 rounded-lg object-cover"
                         />
                         <input
                           type="text"
@@ -634,14 +705,14 @@ const gouserId = (profileId) => {
                           value={commentText[post._id] || ''}
                           onChange={(e) => setCommentText(prev => ({ ...prev, [post._id]: e.target.value }))}
                           onKeyPress={(e) => e.key === 'Enter' && handleComment(post._id)}
-                          className="flex-1 bg-transparent text-white px-3 py-1 rounded-lg focus:outline-none text-sm placeholder-gray-500"
+                          className="flex-1 bg-transparent text-white px-3 py-2 rounded-lg focus:outline-none placeholder-gray-500"
                         />
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleComment(post._id)}
                           disabled={!commentText[post._id]?.trim()}
-                          className="p-2 bg-[#ceea45] text-black rounded-lg hover:bg-[#b8d93c] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-2 bg-[#ceea45] text-black rounded-lg hover:bg-[#b8d93c] transition-all disabled:opacity-30"
                         >
                           <Send className="w-4 h-4" />
                         </motion.button>
@@ -654,19 +725,19 @@ const gouserId = (profileId) => {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="mt-3 space-y-3 max-h-96 overflow-y-auto"
+                            className="mt-4 space-y-3 max-h-96 overflow-y-auto"
                           >
                             {post.comments.map((comment) => (
-                              <div key={comment._id} className="bg-gray-800/50 rounded-lg p-3 border border-[#ceea45]/10">
-                                <div className="flex items-start gap-2">
+                              <div key={comment._id} className="bg-[#ceea45]/5 rounded-lg p-4 border border-[#ceea45]/20">
+                                <div className="flex items-start gap-3">
                                   <img
                                     src={comment.userId?.profilePic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
                                     alt={comment.userId?.username}
-                                    className="w-8 h-8 rounded-lg object-cover"
+                                    className="w-9 h-9 rounded-lg object-cover"
                                   />
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
-                                      <span className="font-semibold text-white text-sm">
+                                      <span className="font-bold text-white text-sm">
                                         {comment.userId?.username}
                                       </span>
                                       <span className="text-xs text-gray-500">
@@ -678,7 +749,6 @@ const gouserId = (profileId) => {
                                     <div className="flex items-center gap-4">
                                       <motion.button
                                         whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.95 }}
                                         onClick={() => handleCommentLike(post._id, comment._id)}
                                         className="flex items-center gap-1 text-gray-400 hover:text-red-500 transition-colors text-xs"
                                       >
@@ -718,10 +788,9 @@ const gouserId = (profileId) => {
                                           />
                                           <motion.button
                                             whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
                                             onClick={() => handleReply(post._id, comment._id)}
                                             disabled={!replyText[comment._id]?.trim()}
-                                            className="p-1.5 bg-[#ceea45] text-black rounded-lg hover:bg-[#b8d93c] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                            className="p-1.5 bg-[#ceea45] text-black rounded-lg hover:bg-[#b8d93c] transition-all disabled:opacity-30"
                                           >
                                             <Send className="w-3 h-3" />
                                           </motion.button>
@@ -740,7 +809,7 @@ const gouserId = (profileId) => {
                                               className="w-6 h-6 rounded-lg object-cover"
                                             />
                                             <div className="flex-1">
-                                              <span className="font-semibold text-white text-xs">
+                                              <span className="font-bold text-white text-xs">
                                                 {reply.userId?.username}
                                               </span>
                                               <p className="text-gray-300 text-xs">{reply.text}</p>
@@ -757,23 +826,23 @@ const gouserId = (profileId) => {
                         )}
                       </AnimatePresence>
                     </div>
-                  </motion.div>
+                  </BentoCard>
                 ))}
               </motion.div>
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-16"
+                className="text-center py-20"
               >
                 <motion.div
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                   className="inline-block"
                 >
-                  <Sparkles className="w-16 h-16 text-[#ceea45]/30 mx-auto mb-4" />
+                  <Sparkles className="w-20 h-20 text-[#ceea45]/30 mx-auto mb-4" />
                 </motion.div>
-                <p className="text-gray-400 text-lg font-semibold mb-2">No posts found</p>
+                <p className="text-gray-400 text-lg font-bold mb-2">No posts found</p>
                 {debouncedSearch && (
                   <p className="text-gray-500 text-sm">
                     Try adjusting your search query

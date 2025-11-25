@@ -9,6 +9,7 @@ import messageApiSlice from "./apiSclice/messageApiSlice.js";
 import notificationApiSlice from "./apiSclice/NotificationApiSlice.js";
 import createContactApi from "./apiSclice/Contact.ApiSlice.js";
 import createNewSatelarApi from "./apiSclice/NewSatelar.ApiSlice.js";
+import portfolioApiSlice from "./apiSclice/portfolioApiSlice.js";
 
 
 export const store = configureStore({
@@ -22,7 +23,8 @@ export const store = configureStore({
         [messageApiSlice.reducerPath]: messageApiSlice.reducer,
         [notificationApiSlice.reducerPath]: notificationApiSlice.reducer,
         [createContactApi.reducerPath]: createContactApi.reducer,
-        [createNewSatelarApi.reducerPath]: createNewSatelarApi.reducer
+        [createNewSatelarApi.reducerPath]: createNewSatelarApi.reducer,
+        [portfolioApiSlice.reducerPath]: portfolioApiSlice.reducer
     },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware()
@@ -33,5 +35,6 @@ export const store = configureStore({
             .concat(notificationApiSlice.middleware)
             .concat(createContactApi.middleware)
             .concat(createNewSatelarApi.middleware)
+            .concat(portfolioApiSlice.middleware)
            
 })
