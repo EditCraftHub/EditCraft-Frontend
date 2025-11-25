@@ -275,17 +275,16 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
       `}</style>
 
       {/* Mobile Toggle Button */}
-      <button
-        onClick={toggleSidebar}
-        className="lg:hidden fixed top-7 left-8 z-50 p-2.5 bg-gradient-to-br from-black to-gray-900 backdrop-blur-xl text-white rounded-xl hover:bg-black transition-all duration-300 shadow-lg border border-[#ceea45]/30 hover:border-[#ceea45] animate-glow"
-        aria-label="Toggle menu"
-      >
-        {isOpen ? (
-          <IoClose className="text-xl" />
-        ) : (
-          <HiMenuAlt3 className="text-xl" />
-        )}
-      </button>
+      {/* Mobile Toggle Button - NO X BUTTON */}
+{!isOpen && (
+  <button
+    onClick={toggleSidebar}
+    className="lg:hidden fixed top-7 left-8 z-50 p-2.5 bg-gradient-to-br from-black to-gray-900 backdrop-blur-xl text-white rounded-xl hover:bg-black transition-all duration-300 shadow-lg border border-[#ceea45]/30 hover:border-[#ceea45] animate-glow"
+    aria-label="Toggle menu"
+  >
+    <HiMenuAlt3 className="text-xl" />
+  </button>
+)}
 
       {/* Mobile Overlay */}
       {isOpen && (
